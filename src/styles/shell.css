@@ -1,0 +1,50 @@
+@reference "../index.css";
+
+.app-shell {
+  @apply min-h-screen bg-surface;
+}
+
+.topbar {
+  @apply sticky top-0 z-20 flex h-16 items-center gap-8 border-b border-[#dce5e1] bg-white px-8;
+}
+
+.brand {
+  @apply inline-flex items-center gap-[9px] whitespace-nowrap text-[17px] text-travel-900 no-underline;
+  font-weight: 760;
+}
+
+.brand-mark {
+  @apply inline-grid size-[31px] place-items-center rounded-md bg-travel-500 text-white;
+}
+
+.main-nav {
+  @apply flex items-stretch gap-[22px] self-stretch;
+}
+
+.main-nav a,
+.main-nav button {
+  @apply inline-flex items-center gap-[5px] border-x-0 border-t-0 border-b-2 border-transparent bg-transparent p-0 text-sm text-[#667472] no-underline;
+}
+
+.main-nav a:hover,
+.main-nav a.active,
+.main-nav button:hover,
+.main-nav button.active { @apply border-coral-500 text-[#173b3e]; }
+
+.topbar-actions {
+  @apply ml-auto flex items-center gap-[14px];
+}
+
+.verified {
+  @apply inline-flex items-center gap-[5px] text-xs font-bold text-[#19715d];
+}
+
+.account-name { @apply inline-flex items-center gap-[5px] text-xs text-[#31565a]; font-weight: 750; }
+
+.icon-text-button,
+.outline-button {
+  @apply inline-flex min-h-[34px] items-center justify-center gap-[7px] rounded-[5px] border border-[#cbd9d4] bg-white px-[11px] text-[13px] font-bold text-[#244549];
+}
+
+.icon-text-button:hover,
+.outline-button:hover { @apply border-[#57948d] bg-travel-50; }

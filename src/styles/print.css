@@ -1,0 +1,3 @@
+@media print {
+  .topbar, .preference-panel, .itinerary-actions, .map-and-budget, .alternatives-section, .travel-note { display: none; }.planner-layout { display: block; }.itinerary-area { padding: 0; }.timeline-item::before { background: #a8b5b1; }.stop-card { break-inside: avoid; }
+}

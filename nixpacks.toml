@@ -1,0 +1,10 @@
+providers = ["node"]
+
+# This repository is npm-based and tracks package-lock.json. Keeping the
+# commands explicit prevents a hosting-dashboard package-manager default from
+# accidentally switching the build to pnpm.
+[phases.install]
+cmds = ["npm ci"]
+
+[phases.build]
+cmds = ["npm run build"]

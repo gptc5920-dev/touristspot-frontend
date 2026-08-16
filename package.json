@@ -2,6 +2,7 @@
   "name": "frontend",
   "private": true,
   "version": "0.0.0",
+  "packageManager": "npm@10.9.3",
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail --names api,web --prefix-colors blue,green \"python ../back-end/manage.py runserver 127.0.0.1:8000\" \"vite\"",

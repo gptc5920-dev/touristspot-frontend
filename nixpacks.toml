@@ -4,7 +4,7 @@ providers = ["node"]
 # commands explicit prevents a hosting-dashboard package-manager default from
 # accidentally switching the build to pnpm.
 [phases.install]
-cmds = ["npm ci"]
+cmds = ["npm ci --include=optional"]
 
 [phases.build]
 cmds = ["npm run build"]

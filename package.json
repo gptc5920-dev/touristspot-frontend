@@ -3,12 +3,16 @@
   "private": true,
   "version": "0.0.0",
   "packageManager": "npm@10.9.3",
+  "engines": {
+    "node": "22.x"
+  },
   "type": "module",
   "scripts": {
     "dev": "concurrently --kill-others-on-fail --names api,web --prefix-colors blue,green \"python ../back-end/manage.py runserver 127.0.0.1:8000\" \"vite\"",
     "dev:api": "python ../back-end/manage.py runserver 127.0.0.1:8000",
     "dev:web": "vite",
     "build": "vite build",
+    "build:django": "vite build --mode django",
     "lint": "oxlint",
     "preview": "vite preview"
   },
@@ -22,10 +26,10 @@
     "@tailwindcss/vite": "^4.3.3",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
-    "@vitejs/plugin-react": "^6.0.4",
+    "@vitejs/plugin-react": "4.7.0",
     "concurrently": "^10.0.4",
     "oxlint": "^1.75.0",
     "tailwindcss": "^4.3.3",
-    "vite": "^8.2.0"
+    "vite": "6.4.1"
   }
 }

@@ -3,18 +3,18 @@ import react from '@vitejs/plugin-react'
 import tailwindcss from '@tailwindcss/vite'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
+  // Django collects the production bundle under /static/. Keeping the normal
+  // root base for development preserves Vite's local server behaviour.
+  base: mode === 'django' ? '/static/' : '/',
   plugins: [react(), tailwindcss()],
   build: {
-    rolldownOptions: {
+    rollupOptions: {
       output: {
-        codeSplitting: {
-          groups: [
-            {
-              name: 'fontawesome',
-              test: /node_modules[\\/]@fortawesome[\\/]/,
-            },
-          ],
+        manualChunks(id) {
+          if (id.includes('node_modules/@fortawesome/')) {
+            return 'fontawesome'
+          }
         },
       },
     },
@@ -26,4 +26,4 @@ export default defineConfig({
       '/media': 'http://127.0.0.1:8000',
     },
   },
-})
+}))

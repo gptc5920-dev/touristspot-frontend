@@ -34,7 +34,7 @@ export default function AdminDashboardOverview({ dashboard, loading, onManage, o
             <div><span><i className="status-dot inactive" /> Unavailable</span><strong>{stats.inactive_destinations ?? 0}</strong></div>
           </div>
         </div>
-        <div className="coverage-strip"><span><strong>{stats.categories ?? 0}</strong> categories</span><span><strong>{stats.areas ?? 0}</strong> covered areas</span><span><strong>{stats.average_entrance_fee == null ? 'â€”' : peso.format(stats.average_entrance_fee)}</strong> average entry</span></div>
+        <div className="coverage-strip"><span><strong>{stats.categories ?? 0}</strong> categories</span><span><strong>{stats.areas ?? 0}</strong> covered areas</span><span><strong>{stats.average_entrance_fee == null ? '—' : peso.format(stats.average_entrance_fee)}</strong> average entry</span></div>
       </article>
 
       <article className="admin-dashboard-panel interest-panel">
@@ -47,12 +47,12 @@ export default function AdminDashboardOverview({ dashboard, loading, onManage, o
     <section className="admin-activity-grid">
       <article className="admin-dashboard-panel">
         <div className="dashboard-panel-heading"><div><span className="eyebrow"><ListChecks size={14} /> Action queue</span><h2>Needs attention</h2></div><span className="panel-count">{attentionItems.length}</span></div>
-        {attentionItems.length ? <div className="attention-list">{attentionItems.map((item) => <button type="button" key={item.id} onClick={() => onEdit(item.id)}><span className="attention-icon"><TriangleAlert size={16} /></span><span><strong>{item.name}</strong><small>{item.category} Â· {item.area}</small></span><em>{item.issue}</em><ArrowRight size={15} /></button>)}</div> : <div className="dashboard-empty"><BadgeCheck size={25} /><strong>Everything is up to date</strong><span>No destination records currently need attention.</span></div>}
+        {attentionItems.length ? <div className="attention-list">{attentionItems.map((item) => <button type="button" key={item.id} onClick={() => onEdit(item.id)}><span className="attention-icon"><TriangleAlert size={16} /></span><span><strong>{item.name}</strong><small>{item.category} · {item.area}</small></span><em>{item.issue}</em><ArrowRight size={15} /></button>)}</div> : <div className="dashboard-empty"><BadgeCheck size={25} /><strong>Everything is up to date</strong><span>No destination records currently need attention.</span></div>}
       </article>
 
       <article className="admin-dashboard-panel">
         <div className="dashboard-panel-heading"><div><span className="eyebrow"><FileClock size={14} /> Traveler activity</span><h2>Recent itineraries</h2></div></div>
-        {recentItineraries.length ? <div className="recent-itinerary-list">{recentItineraries.map((itinerary) => <div key={itinerary.id}><span className="itinerary-date"><strong>{new Date(`${itinerary.travel_date}T00:00:00`).toLocaleDateString('en-PH', { day: '2-digit' })}</strong><small>{new Date(`${itinerary.travel_date}T00:00:00`).toLocaleDateString('en-PH', { month: 'short' })}</small></span><span><strong>{itinerary.name}</strong><small>Travel date Â· {new Date(`${itinerary.travel_date}T00:00:00`).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' })}</small></span></div>)}</div> : <div className="dashboard-empty"><FileClock size={25} /><strong>No saved itineraries yet</strong><span>Traveler activity will appear here after plans are saved.</span></div>}
+        {recentItineraries.length ? <div className="recent-itinerary-list">{recentItineraries.map((itinerary) => <div key={itinerary.id}><span className="itinerary-date"><strong>{new Date(`${itinerary.travel_date}T00:00:00`).toLocaleDateString('en-PH', { day: '2-digit' })}</strong><small>{new Date(`${itinerary.travel_date}T00:00:00`).toLocaleDateString('en-PH', { month: 'short' })}</small></span><span><strong>{itinerary.name}</strong><small>Travel date · {new Date(`${itinerary.travel_date}T00:00:00`).toLocaleDateString('en-PH', { year: 'numeric', month: 'short', day: 'numeric' })}</small></span></div>)}</div> : <div className="dashboard-empty"><FileClock size={25} /><strong>No saved itineraries yet</strong><span>Traveler activity will appear here after plans are saved.</span></div>}
       </article>
     </section>
   </div>

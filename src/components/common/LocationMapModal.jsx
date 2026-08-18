@@ -7,7 +7,7 @@ export default function LocationMapModal({ draft, onApply, onClose, eyebrow = 'D
   const initialAddress = draft.address || ''
   const initialTarget = Number.isFinite(Number(initialLatitude)) && initialLatitude && Number.isFinite(Number(initialLongitude)) && initialLongitude
     ? `${initialLatitude},${initialLongitude}`
-    : initialAddress || 'Sergio OsmeÃ±a, Zamboanga del Norte, Philippines'
+    : initialAddress || 'Sergio Osmeña, Zamboanga del Norte, Philippines'
   const [address, setAddress] = useState(initialAddress)
   const [latitude, setLatitude] = useState(initialLatitude)
   const [longitude, setLongitude] = useState(initialLongitude)

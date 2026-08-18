@@ -84,7 +84,7 @@ export default function PlannerPage({
                     <label key={destination.id} className={selectedDestinationIds.has(destination.id) ? 'destination-option checked' : 'destination-option'}>
                       <input type="checkbox" checked={selectedDestinationIds.has(destination.id)} onChange={() => onToggleDestination(destination.id)} />
                       <span className="checkbox-visual" aria-hidden="true" />
-                      <span className="destination-option-copy"><strong>{destination.name}</strong><small>{destination.category} Â· {destination.hours}</small><small className="destination-rating"><Star size={11} fill="currentColor" /> {destination.average_rating ?? 'New'}{destination.review_count ? ` (${destination.review_count})` : ' Â· No reviews yet'}</small><span className="destination-option-fee"><span>Entrance fee</span><b>{peso.format(Number(destination.entrance_fee || 0))}</b></span></span>
+                      <span className="destination-option-copy"><strong>{destination.name}</strong><small>{destination.category} · {destination.hours}</small><small className="destination-rating"><Star size={11} fill="currentColor" /> {destination.average_rating ?? 'New'}{destination.review_count ? ` (${destination.review_count})` : ' · No reviews yet'}</small><span className="destination-option-fee"><span>Entrance fee</span><b>{peso.format(Number(destination.entrance_fee || 0))}</b></span></span>
                     </label>
                   ))}
                 </div>
@@ -92,7 +92,7 @@ export default function PlannerPage({
               </section>
     
               <section className={plannerOpenSection === 'style' ? 'form-section compact-section planner-accordion open' : 'form-section compact-section planner-accordion'}>
-                <button type="button" className="section-title planner-accordion-trigger" aria-expanded={plannerOpenSection === 'style'} onClick={() => onToggleSection('style')}><Users size={17} /><span><strong>Travel style</strong><small>{form.pace} pace Â· {form.transportation}</small></span><ChevronDown size={17} /></button>
+                <button type="button" className="section-title planner-accordion-trigger" aria-expanded={plannerOpenSection === 'style'} onClick={() => onToggleSection('style')}><Users size={17} /><span><strong>Travel style</strong><small>{form.pace} pace · {form.transportation}</small></span><ChevronDown size={17} /></button>
                 {plannerOpenSection === 'style' && <div className="planner-accordion-panel">
                 <div className="form-grid two-columns">
                   <label>Traveling as<select value={form.companion} onChange={(event) => onUpdateForm('companion', event.target.value)}><option value="solo">Solo</option><option value="couple">Couple</option><option value="family">Family</option><option value="friends">Friends</option><option value="seniors">Senior travelers</option><option value="children">With children</option></select></label>
@@ -117,7 +117,7 @@ export default function PlannerPage({
                 <div>
                   <span className="eyebrow"><Route size={15} /> Your route</span>
                   <h2>{itinerary?.title || 'Your personalized itinerary'}</h2>
-                  <p>{itinerary ? `${itinerary.summary.destinations} verified stops Â· ${itinerary.summary.travel_minutes} min estimated travel` : 'Generate a route to see an organized day plan.'}</p>
+                  <p>{itinerary ? `${itinerary.summary.destinations} verified stops · ${itinerary.summary.travel_minutes} min estimated travel` : 'Generate a route to see an organized day plan.'}</p>
                   {itinerary?.summary?.recommendation_engine && <div className="recommendation-engine-badge"><Sparkles size={14} /><span>Hybrid personalized</span><small>{itinerary.summary.recommendation_engine.collaborative_enabled ? `Learned from ${itinerary.summary.recommendation_engine.history_samples} similar saved ${itinerary.summary.recommendation_engine.history_samples === 1 ? 'trip' : 'trips'}` : 'Content and trip-context recommendations'}</small></div>}
                 </div>
                 <div className="itinerary-actions">
@@ -130,8 +130,8 @@ export default function PlannerPage({
                 </div>
               </div>
     
-              {error && <div className="alert error"><CircleAlert size={18} /><span>{error}</span><button type="button" title="Dismiss message" onClick={() => onDismissError()}>Ã—</button></div>}
-              {notice && <div className="alert success"><BadgeCheck size={18} /><span>{notice}</span><button type="button" title="Dismiss message" onClick={() => onDismissNotice()}>Ã—</button></div>}
+              {error && <div className="alert error"><CircleAlert size={18} /><span>{error}</span><button type="button" title="Dismiss message" onClick={() => onDismissError()}>×</button></div>}
+              {notice && <div className="alert success"><BadgeCheck size={18} /><span>{notice}</span><button type="button" title="Dismiss message" onClick={() => onDismissNotice()}>×</button></div>}
     
               {loading ? <div className="route-loading"><RefreshCw className="spin" size={24} /> Loading verified destination data</div> : itinerary ? <>
                 {itinerary.adjustments?.length > 0 && <div className="adjustments">{itinerary.adjustments.map((adjustment) => <div key={adjustment}><CircleAlert size={16} /> {adjustment}</div>)}</div>}
@@ -149,7 +149,7 @@ export default function PlannerPage({
                             <p className="stop-address"><MapPin size={14} /> {stop.address}</p>
                             {stop.recommendation && <div className="recommendation-explanation"><span><Sparkles size={13} /> {stop.recommendation.match_percent}% match</span><div>{stop.recommendation.reasons.map((reason) => <small key={reason}>{reason}</small>)}</div></div>}
                             <div className="activity-tags">{stop.activities?.slice(0, 3).map((activity) => <span key={activity}>{activity}</span>)}</div>
-                            <div className="stop-footer"><span className="stop-entrance-fee"><small>Entrance fee</small><strong>{formatEstimate(stop.estimated_cost)}</strong></span><div><button type="button" className="review-trigger" title={`Read or add reviews for ${stop.title}`} onClick={(event) => { event.stopPropagation(); onFeedback({ id: stop.id, name: stop.title }) }}><MessageCircle size={15} /><span>{stop.review_count ? `${stop.average_rating} Â· ${stop.review_count}` : 'Review'}</span></button><button type="button" title="Move this place earlier" onClick={(event) => { event.stopPropagation(); onMoveEarlier(stop.id) }}><ArrowUp size={15} /></button><button type="button" title="Remove this place" onClick={(event) => { event.stopPropagation(); onRemoveStop(stop.id) }}><Trash2 size={15} /></button></div></div>
+                            <div className="stop-footer"><span className="stop-entrance-fee"><small>Entrance fee</small><strong>{formatEstimate(stop.estimated_cost)}</strong></span><div><button type="button" className="review-trigger" title={`Read or add reviews for ${stop.title}`} onClick={(event) => { event.stopPropagation(); onFeedback({ id: stop.id, name: stop.title }) }}><MessageCircle size={15} /><span>{stop.review_count ? `${stop.average_rating} · ${stop.review_count}` : 'Review'}</span></button><button type="button" title="Move this place earlier" onClick={(event) => { event.stopPropagation(); onMoveEarlier(stop.id) }}><ArrowUp size={15} /></button><button type="button" title="Remove this place" onClick={(event) => { event.stopPropagation(); onRemoveStop(stop.id) }}><Trash2 size={15} /></button></div></div>
                           </>}
                           {stop.type === 'travel' || stop.type === 'return' ? <p className="travel-detail"><CarFront size={15} /> {stop.transportation === 'public' ? 'Public transit suggested' : `${stop.transportation} suggested`}</p> : null}
                           {stop.type === 'meal' ? <p className="travel-detail"><Utensils size={15} /> Meal price is currently unavailable</p> : null}
@@ -160,9 +160,9 @@ export default function PlannerPage({
     
                   <aside className="map-and-budget">
                     <div className="map-card">
-                      <div className="map-header"><div><span className="eyebrow"><MapPin size={14} /> Live municipality map</span><strong>Sergio OsmeÃ±a Sr., Zamboanga del Norte</strong></div><a className="icon-button" title="Open in Google Maps" href={GOOGLE_MAP_URL} target="_blank" rel="noreferrer"><Navigation size={17} /></a></div>
-                      <div className="google-map-surface"><iframe title="Google Map of Sergio OsmeÃ±a Sr., Zamboanga del Norte" src={GOOGLE_MAP_EMBED_URL} loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div>
-                      <p className="map-caption"><MapPin size={14} /> Centered on the official municipality location supplied for Sergio OsmeÃ±a Sr.</p>
+                      <div className="map-header"><div><span className="eyebrow"><MapPin size={14} /> Live municipality map</span><strong>Sergio Osmeña Sr., Zamboanga del Norte</strong></div><a className="icon-button" title="Open in Google Maps" href={GOOGLE_MAP_URL} target="_blank" rel="noreferrer"><Navigation size={17} /></a></div>
+                      <div className="google-map-surface"><iframe title="Google Map of Sergio Osmeña Sr., Zamboanga del Norte" src={GOOGLE_MAP_EMBED_URL} loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div>
+                      <p className="map-caption"><MapPin size={14} /> Centered on the official municipality location supplied for Sergio Osmeña Sr.</p>
                     </div>
                     <div className="budget-panel">
                       <div className="budget-heading"><div><span className="eyebrow"><Sparkles size={14} /> Cost estimate</span><strong>{peso.format(itinerary.budget.total)}</strong></div><span>For {form.travelers} travelers</span></div>
@@ -178,7 +178,7 @@ export default function PlannerPage({
                 <section className="alternatives-section">
                   <div className="section-heading-row"><div><span className="eyebrow"><Sparkles size={15} /> Plan B</span><h3>Verified alternatives nearby</h3></div><span>Choose one to refresh your day</span></div>
                   <div className="alternatives-grid">
-                    {itinerary.alternatives.map((destination) => <article key={destination.id} className="alternative-card"><img src={destination.image_url} alt="" /><div><span>{destination.category}</span><h4>{destination.name}</h4><p>{destination.visit_minutes} min{destination.recommendation ? ` Â· ${destination.recommendation.match_percent}% match` : ''}</p><p className="alternative-rating"><Star size={12} fill="currentColor" /> {destination.average_rating ?? 'New'}{destination.review_count ? ` from ${destination.review_count} traveler${destination.review_count === 1 ? '' : 's'}` : ' Â· Be the first to review'}</p><div className="alternative-entrance-fee"><small>Entrance fee</small><strong>{peso.format(Number(destination.entrance_fee || 0))}</strong></div><div className="alternative-actions"><button type="button" onClick={() => onAddAlternative(destination.id)}><Plus size={15} /> Add to route</button><button type="button" onClick={() => onFeedback(destination)}><MessageCircle size={15} /> Reviews</button></div></div></article>)}
+                    {itinerary.alternatives.map((destination) => <article key={destination.id} className="alternative-card"><img src={destination.image_url} alt="" /><div><span>{destination.category}</span><h4>{destination.name}</h4><p>{destination.visit_minutes} min{destination.recommendation ? ` · ${destination.recommendation.match_percent}% match` : ''}</p><p className="alternative-rating"><Star size={12} fill="currentColor" /> {destination.average_rating ?? 'New'}{destination.review_count ? ` from ${destination.review_count} traveler${destination.review_count === 1 ? '' : 's'}` : ' · Be the first to review'}</p><div className="alternative-entrance-fee"><small>Entrance fee</small><strong>{peso.format(Number(destination.entrance_fee || 0))}</strong></div><div className="alternative-actions"><button type="button" onClick={() => onAddAlternative(destination.id)}><Plus size={15} /> Add to route</button><button type="button" onClick={() => onFeedback(destination)}><MessageCircle size={15} /> Reviews</button></div></div></article>)}
                   </div>
                 </section>
     

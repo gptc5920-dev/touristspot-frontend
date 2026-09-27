@@ -7,7 +7,7 @@ import { readApiJson } from '../../api'
 import { INTERESTS } from '../../config/travel'
 import { apiErrorMessage, authUserFromPayload, requestErrorMessage } from '../../lib/app'
 
-export default function TouristProfilePage({ apiFetch, user, checking, onSignIn, onSignUp, onBack, onUserChange, onUsePreferences }) {
+export default function TouristProfilePage({ apiFetch, user, checking, onSignIn, onSignUp, onBack, onUserChange, onProfileSaved, onUsePreferences }) {
   const [profile, setProfile] = useState(null)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
@@ -17,6 +17,8 @@ export default function TouristProfilePage({ apiFetch, user, checking, onSignIn,
   useEffect(() => {
     let cancelled = false
     if (!user.is_authenticated || user.role !== 'tourist') {
+      setProfile(null)
+      setError('')
       setLoading(false)
       return () => { cancelled = true }
     }
@@ -36,7 +38,7 @@ export default function TouristProfilePage({ apiFetch, user, checking, onSignIn,
     }
     loadProfile()
     return () => { cancelled = true }
-  }, [apiFetch, user.is_authenticated, user.role])
+  }, [apiFetch, user.is_authenticated, user.role, user.username])
 
   function updateProfile(field, value) {
     setSaved(false)
@@ -51,6 +53,7 @@ export default function TouristProfilePage({ apiFetch, user, checking, onSignIn,
 
   async function saveProfile(event) {
     event.preventDefault()
+    if (saving || !profile) return
     setSaving(true)
     setError('')
     setSaved(false)
@@ -74,6 +77,7 @@ export default function TouristProfilePage({ apiFetch, user, checking, onSignIn,
       if (!response.ok) throw new Error(apiErrorMessage(body, 'Could not save your travel profile.'))
       setProfile(body.profile)
       onUserChange(authUserFromPayload(body.user))
+      onProfileSaved(body.profile)
       setSaved(true)
     } catch (requestError) {
       setError(requestErrorMessage(requestError, 'Could not save your travel profile.'))

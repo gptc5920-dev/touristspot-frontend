@@ -9,20 +9,20 @@ import RecommendationCard from './RecommendationCard'
 const GROUP_ORDER = ['Best Match', 'Highly Recommended', 'Other Matching Destinations', 'Popular Destinations']
 
 export default function RecommendationsPage({
-  user, checking, preferences, data, generating, error,
+  user, checking, preferences, loadingPreferences, data, generating, error,
   onGenerate, onUpdatePreferences, onAddToItinerary,
 }) {
   const [details, setDetails] = useState(null)
   const requestedForUser = useRef('')
 
   useEffect(() => {
-    if (!checking && user.role === 'tourist' && user.preferences_completed && !data && !generating && requestedForUser.current !== user.username) {
+    if (!checking && !loadingPreferences && user.role === 'tourist' && user.preferences_completed && !data && !generating && requestedForUser.current !== user.username) {
       requestedForUser.current = user.username
       onGenerate()
     }
-  }, [checking, data, generating, onGenerate, user.preferences_completed, user.role, user.username])
+  }, [checking, data, generating, loadingPreferences, onGenerate, user.preferences_completed, user.role, user.username])
 
-  if (checking || (generating && !data)) return <main className="grid min-h-[calc(100vh-64px)] place-items-center bg-slate-50 px-5"><div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-200/50"><span className="mx-auto grid size-16 place-items-center rounded-2xl bg-teal-50 text-teal-700"><WandSparkles size={30} /></span><h1 className="mt-5 text-2xl font-extrabold text-slate-950">Creating your recommendations</h1><p className="mt-2 text-sm leading-6 text-slate-500">Comparing your preferences with active, verified destination records.</p><RefreshCw className="spin mx-auto mt-5 text-teal-700" size={22} /></div></main>
+  if (checking || loadingPreferences || (generating && !data)) return <main className="grid min-h-[calc(100vh-64px)] place-items-center bg-slate-50 px-5"><div className="max-w-md rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-200/50"><span className="mx-auto grid size-16 place-items-center rounded-2xl bg-teal-50 text-teal-700"><WandSparkles size={30} /></span><h1 className="mt-5 text-2xl font-extrabold text-slate-950">Creating your recommendations</h1><p className="mt-2 text-sm leading-6 text-slate-500">Loading your saved preferences and comparing them with active, verified destination records.</p><RefreshCw className="spin mx-auto mt-5 text-teal-700" size={22} /></div></main>
   if (!user.is_authenticated || user.role !== 'tourist') return <main className="grid min-h-[calc(100vh-64px)] place-items-center bg-slate-50 px-5"><section className="w-full max-w-lg rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-200/50"><ShieldCheck className="mx-auto text-teal-700" size={32} /><h1 className="mt-4 text-3xl font-extrabold text-slate-950">Tourist recommendations are private</h1><p className="mt-3 leading-7 text-slate-600">Sign in with a tourist account to view your personalized destination matches.</p></section></main>
   if (!user.preferences_completed) return <main className="grid min-h-[calc(100vh-64px)] place-items-center bg-slate-50 px-5"><section className="w-full max-w-xl rounded-2xl border border-slate-200 bg-white p-8 text-center shadow-xl shadow-slate-200/50"><SlidersHorizontal className="mx-auto text-teal-700" size={32} /><h1 className="mt-4 text-3xl font-extrabold text-slate-950">Complete your preferences first</h1><p className="mt-3 leading-7 text-slate-600">A few travel choices are required before we can rank verified destinations for you.</p><button type="button" className="mt-6 min-h-12 rounded-xl bg-teal-700 px-6 text-sm font-bold text-white" onClick={onUpdatePreferences}>Set travel preferences</button></section></main>
 

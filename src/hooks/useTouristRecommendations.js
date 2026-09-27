@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { readApiJson } from '../api'
 import { EMPTY_TOURIST_PREFERENCES } from '../config/preferences'
 import { apiErrorMessage, authUserFromPayload, requestErrorMessage } from '../lib/app'
@@ -39,8 +39,12 @@ function popularFallback(destinations) {
 }
 
 export default function useTouristRecommendations({ apiFetch, user, onUserChange, navigateTo, verifiedDestinations }) {
+  const userIdentity = user.is_authenticated && user.role === 'tourist' ? user.username : ''
+  const activeUserIdentity = useRef(userIdentity)
+  activeUserIdentity.current = userIdentity
   const [preferences, setPreferences] = useState(EMPTY_TOURIST_PREFERENCES)
   const [recommendationData, setRecommendationData] = useState(null)
+  const [recommendationOwner, setRecommendationOwner] = useState('')
   const [loadingPreferences, setLoadingPreferences] = useState(true)
   const [generating, setGenerating] = useState(false)
   const [saving, setSaving] = useState(false)
@@ -50,11 +54,25 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
   useEffect(() => {
     let active = true
     if (!user.is_authenticated || user.role !== 'tourist') {
+      setPreferences({ ...EMPTY_TOURIST_PREFERENCES })
+      setRecommendationData(null)
+      setRecommendationOwner('')
+      setFieldErrors({})
+      setError('')
+      setGenerating(false)
+      setSaving(false)
       setLoadingPreferences(false)
       return () => { active = false }
     }
     async function loadPreferences() {
       setLoadingPreferences(true)
+      setPreferences({ ...EMPTY_TOURIST_PREFERENCES })
+      setRecommendationData(null)
+      setRecommendationOwner('')
+      setFieldErrors({})
+      setError('')
+      setGenerating(false)
+      setSaving(false)
       try {
         const response = await apiFetch('/tourist/preferences/')
         const body = await readApiJson(response)
@@ -71,18 +89,39 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
   }, [apiFetch, user.is_authenticated, user.role, user.username])
 
   const generateRecommendations = useCallback(async ({ method = 'GET' } = {}) => {
+    const requestIdentity = activeUserIdentity.current
     setGenerating(true)
     setError('')
     try {
       const path = method === 'POST' ? '/tourist/recommendations/generate/' : '/tourist/recommendations/'
       const response = await apiFetch(path, { method })
       const body = await readApiJson(response)
-      if (!response.ok) throw new Error(apiErrorMessage(body, 'Could not generate personalized recommendations.'))
+      if (!response.ok) {
+        const responseError = new Error(apiErrorMessage(body, 'Could not generate personalized recommendations.'))
+        responseError.status = response.status
+        responseError.onboardingRequired = Boolean(body.onboarding_required)
+        throw responseError
+      }
+      if (requestIdentity !== activeUserIdentity.current) return false
       setRecommendationData(body)
+      setRecommendationOwner(requestIdentity)
       return true
     } catch (requestError) {
+      if (requestIdentity !== activeUserIdentity.current) return false
       const message = requestErrorMessage(requestError, 'Personalized recommendations are temporarily unavailable. Popular tourist destinations are shown instead.')
       setError(message)
+      if (requestError.onboardingRequired) {
+        setRecommendationData(null)
+        setRecommendationOwner('')
+        onUserChange({ ...user, preferences_completed: false })
+        navigateTo('preferences', { replace: true })
+        return false
+      }
+      if (requestError.status && requestError.status < 500) {
+        setRecommendationData(null)
+        setRecommendationOwner('')
+        return false
+      }
       setRecommendationData({
         success: true,
         personalized: false,
@@ -91,11 +130,38 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
         data_warning: '',
         recommendations: popularFallback(verifiedDestinations),
       })
+      setRecommendationOwner(requestIdentity)
       return true
     } finally {
-      setGenerating(false)
+      if (requestIdentity === activeUserIdentity.current) setGenerating(false)
     }
-  }, [apiFetch, verifiedDestinations])
+  }, [apiFetch, navigateTo, onUserChange, user, verifiedDestinations])
+
+  function syncProfilePreferences(profile) {
+    if (!profile) return
+    setPreferences((current) => ({
+      ...current,
+      selected_interests: Array.isArray(profile.interests) ? profile.interests : [],
+      preferred_categories: Array.isArray(profile.preferred_categories) ? profile.preferred_categories : [],
+      budget_min: profile.budget_min ?? '',
+      budget_max: profile.budget_max ?? '',
+      available_start_time: profile.available_start_time || current.available_start_time,
+      available_end_time: profile.available_end_time || current.available_end_time,
+      travel_pace: profile.preferred_pace || current.travel_pace,
+      transportation_preference: profile.preferred_transportation || current.transportation_preference,
+      traveler_type: profile.traveler_type || current.traveler_type,
+      accessibility_requirements: profile.accessibility_needs ?? '',
+      preferred_language: profile.preferred_language || current.preferred_language,
+      starting_location: profile.starting_location ?? '',
+      latitude: profile.latitude ?? '',
+      longitude: profile.longitude ?? '',
+      onboarding_completed: Boolean(profile.onboarding_completed),
+    }))
+    setRecommendationData(null)
+    setRecommendationOwner('')
+    setFieldErrors({})
+    setError('')
+  }
 
   function updatePreference(field, value) {
     setPreferences((current) => ({ ...current, [field]: value }))
@@ -117,6 +183,7 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
   async function savePreferences(event) {
     event?.preventDefault()
     if (saving || generating) return
+    const requestIdentity = activeUserIdentity.current
     const validationErrors = validatePreferences(preferences)
     if (Object.keys(validationErrors).length) {
       setFieldErrors(validationErrors)
@@ -133,6 +200,7 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
         body: JSON.stringify(Object.fromEntries(Object.entries(preferences).filter(([field]) => !['onboarding_completed', 'created_at', 'updated_at'].includes(field)))),
       })
       const body = await readApiJson(response)
+      if (requestIdentity !== activeUserIdentity.current) return
       if (!response.ok) {
         setFieldErrors(Object.fromEntries(Object.entries(body.errors || {}).map(([field, messages]) => [field, Array.isArray(messages) ? messages[0] : messages])))
         throw new Error(apiErrorMessage(body, 'Could not save your travel preferences.'))
@@ -142,15 +210,17 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
       const generated = await generateRecommendations({ method: 'POST' })
       if (generated) navigateTo('recommendations')
     } catch (requestError) {
-      setError(requestErrorMessage(requestError, 'Could not save your travel preferences. Your selections have been kept.'))
+      if (requestIdentity === activeUserIdentity.current) {
+        setError(requestErrorMessage(requestError, 'Could not save your travel preferences. Your selections have been kept.'))
+      }
     } finally {
-      setSaving(false)
+      if (requestIdentity === activeUserIdentity.current) setSaving(false)
     }
   }
 
   return {
     preferences,
-    recommendationData,
+    recommendationData: recommendationOwner === userIdentity ? recommendationData : null,
     loadingPreferences,
     generating,
     saving,
@@ -161,5 +231,6 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
     togglePreferenceList,
     savePreferences,
     generateRecommendations,
+    syncProfilePreferences,
   }
 }

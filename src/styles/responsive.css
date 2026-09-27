@@ -34,9 +34,7 @@ p { overflow-wrap: anywhere; }
   .map-and-budget { position: static; grid-template-columns: minmax(0, 1.3fr) minmax(250px, .7fr); }
   .google-map-surface { height: 280px; }
   .alternatives-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .admin-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
-  .admin-stat-grid article:nth-child(2) { border-right: 0; }
-  .admin-stat-grid article:nth-child(-n+2) { border-bottom: 1px solid #e3ebe8; }
+  .admin-shell .admin-stat-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-content-grid { grid-template-columns: minmax(240px, .65fr) minmax(0, 1.35fr); }
   .admin-form-grid.four-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .admin-insight-grid { grid-template-columns: 1fr; }
@@ -172,10 +170,6 @@ p { overflow-wrap: anywhere; }
     scrollbar-width: thin;
   }
   .admin-section-nav button { flex: 0 0 auto; }
-  .admin-stat-grid { grid-template-columns: 1fr; }
-  .admin-stat-grid article,
-  .admin-stat-grid article:nth-child(2) { border-right: 0; border-bottom: 1px solid #e3ebe8; }
-  .admin-stat-grid article:last-child { border-bottom: 0; }
   .admin-activity-grid { grid-template-columns: 1fr; }
   .readiness-content { grid-template-columns: 112px minmax(0, 1fr); gap: 16px; }
   .readiness-dial { width: 108px; height: 108px; }
@@ -315,6 +309,12 @@ p { overflow-wrap: anywhere; }
   .attention-list button { grid-template-columns: auto minmax(0, 1fr) auto; }
   .confirm-dialog > div { display: grid; grid-template-columns: 1fr 1fr; }
   .confirm-dialog > div button { width: 100%; }
+}
+
+@media (max-width: 560px) {
+  .admin-shell .admin-stat-grid { grid-template-columns: minmax(0, 1fr); }
+  .admin-shell .admin-dashboard-panel { padding: 15px; }
+  .admin-shell .dashboard-panel-heading { flex-wrap: wrap; }
 }
 
 @media (max-width: 360px) {

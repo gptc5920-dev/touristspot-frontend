@@ -55,7 +55,7 @@ function App() {
 
   useEffect(() => {
     if (auth.checking) return
-    if (auth.user.role === 'admin' && !['admin', 'home'].includes(view)) navigateTo('admin', { replace: true })
+    if (auth.user.role === 'admin' && view !== 'admin') navigateTo('admin', { replace: true })
     if (auth.user.role === 'tourist' && !auth.user.preferences_completed && !['home', 'profile', 'preferences', 'admin'].includes(view)) navigateTo('preferences', { replace: true })
   }, [auth.checking, auth.user.preferences_completed, auth.user.role, navigateTo, view])
 

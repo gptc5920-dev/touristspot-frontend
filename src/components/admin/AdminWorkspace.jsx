@@ -345,8 +345,8 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         <span className="sidebar-label">Workspace</span>
         <nav className="sidebar-navigation" aria-label="Admin navigation">
           <button type="button" title="Dashboard" className={adminSection === 'overview' ? 'active' : ''} onClick={() => selectAdminSection('overview')}><LayoutDashboard size={17} /><span>Dashboard</span></button>
-          <button type="button" title="Destination" className={adminSection === 'table' ? 'active' : ''} onClick={() => selectAdminSection('table')}><Database size={17} /><span>Destination table</span><em>{records.length}</em></button>
-          <button type="button" title="Users" className={adminSection === 'users' ? 'active' : ''} onClick={() => selectAdminSection('users')}><Users size={17} /><span>Users table</span><em>{users.length}</em></button>
+          <button type="button" title="Destination" className={adminSection === 'table' ? 'active' : ''} onClick={() => selectAdminSection('table')}><Database size={17} /><span>Destination</span><em>{records.length}</em></button>
+          <button type="button" title="Users" className={adminSection === 'users' ? 'active' : ''} onClick={() => selectAdminSection('users')}><Users size={17} /><span>Users</span><em>{users.length}</em></button>
           <button type="button" title="Destinations" className={adminSection === 'destinations' ? 'active' : ''} onClick={() => selectAdminSection('destinations')}><MapPinned size={17} /><span>Destinations</span><em>{records.length}</em></button>
           <button type="button" title="General settings" className={adminSection === 'settings' ? 'active' : ''} onClick={() => selectAdminSection('settings')}><Settings2 size={17} /><span>Settings</span></button>
         </nav>

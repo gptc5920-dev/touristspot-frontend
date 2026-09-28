@@ -53,7 +53,9 @@
 
 /* Larger admin typography for comfortable reading and data entry. */
 .admin-shell .destination-editor { display: flex; flex-direction: column; max-height: calc(100dvh - 178px); min-height: 520px; }
-.admin-shell .destination-form { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.admin-shell .destination-editor-heading, .admin-shell .form-completeness, .admin-shell .destination-editor > .interest-summary { flex: 0 0 auto; }
+.admin-shell .destination-form { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.admin-shell .destination-form .accordion-section, .admin-shell .destination-form .destination-editor-footer { flex: 0 0 auto; }
 .admin-shell .destination-accordion-panel { max-height: min(48dvh, 500px); overflow-y: auto; }
 .admin-shell .destination-accordion-trigger { min-height: 56px; }
 .admin-shell .accordion-heading-copy strong { font-size: 13px; }

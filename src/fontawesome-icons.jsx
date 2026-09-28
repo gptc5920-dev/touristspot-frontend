@@ -7,6 +7,7 @@ import {
   faArrowRotateLeft,
   faArrowUp,
   faBars,
+  faBookmark,
   faBuilding,
   faCalendarDays,
   faCalendarWeek,
@@ -83,6 +84,7 @@ function createIcon(icon, displayName) {
 export const ArrowRight = createIcon(faArrowRight, 'ArrowRight')
 export const ArrowUp = createIcon(faArrowUp, 'ArrowUp')
 export const BadgeCheck = createIcon(faCircleCheck, 'BadgeCheck')
+export const Bookmark = createIcon(faBookmark, 'Bookmark')
 export const BarChart3 = createIcon(faChartColumn, 'BarChart3')
 export const Building2 = createIcon(faBuilding, 'Building2')
 export const CalendarDays = createIcon(faCalendarDays, 'CalendarDays')

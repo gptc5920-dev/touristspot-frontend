@@ -74,6 +74,7 @@ export const GUEST_USER = { is_authenticated: false, role: 'guest', username: ''
 export const ROUTES = {
   admin: '/admin-dashboard/',
   home: '/',
+  discover: '/discover/',
   planner: '/planner/',
   profile: '/profile/',
   preferences: '/tourist/preferences',

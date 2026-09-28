@@ -7,7 +7,7 @@ import {
 import { peso } from '../../lib/app'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 
-export default function ClientHomePage({ destinations, loading, user, onPlan, onSignUp, onProfile, onFeedback }) {
+export default function ClientHomePage({ destinations, loading, user, onPlan, onDiscover, onSignUp, onProfile, onFeedback }) {
   const { settings } = useSiteSettings()
   const topDestinations = useMemo(() => [...destinations]
     .sort((first, second) => {
@@ -55,7 +55,7 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
       <div className="home-visual-stage"><div className="home-hero-visual" role="region" aria-roledescription="carousel" aria-label="Top three destinations">
         {featured?.image_url ? <img key={featured.id} className="home-carousel-image" src={featured.image_url} alt={featured.name} /> : <div className="home-hero-placeholder"><MapPinned size={48} /><span>Verified local destinations will appear here</span></div>}
         <div className="home-visual-shade" />
-        <a className="home-featured-card" href="#featured-destinations">Explore Verified Destinations <ArrowRight size={16} /></a>
+        <button type="button" className="home-featured-card" onClick={onDiscover}>Explore Verified Destinations <ArrowRight size={16} /></button>
         <div className="home-ai-badge"><Sparkles size={16} /><span><strong>Personalized Hybrid Recommendations</strong><small>Personalized to your trip</small></span></div>
         {topDestinations.length > 1 && <div className="home-carousel-controls">
           <button type="button" onClick={() => moveCarousel(-1)} aria-label="Show previous top destination"><ChevronLeft size={17} /></button>

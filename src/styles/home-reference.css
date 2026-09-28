@@ -26,7 +26,7 @@
 .home-ai-badge { top: 10px; left: 10px; gap: 8px; padding: 8px 10px; border-color: #e9f5f2; border-radius: 6px; color: #0b6965; background: #fffffff0; box-shadow: 0 8px 16px #062b2b30; }
 .home-ai-badge strong { color: #213a3a; font-size: 10px; }
 .home-ai-badge small { color: #526b69; font-size: 9px; }
-.home-featured-card { right: auto; bottom: 20px; left: 20px; display: inline-flex; align-items: center; gap: 8px; color: #fff; font-size: 13px; font-weight: 800; text-decoration: none; text-shadow: 0 1px 5px #031a1a; }
+.home-featured-card { right: auto; bottom: 20px; left: 20px; display: inline-flex; align-items: center; gap: 8px; padding: 0; border: 0; color: #fff; background: transparent; font-size: 13px; font-weight: 800; text-decoration: none; text-shadow: 0 1px 5px #031a1a; }
 .home-featured-card:hover { color: #d2f5e9; }
 .home-carousel-controls { top: auto; right: 10px; bottom: 10px; gap: 2px; padding: 3px; border-color: #ffffff50; border-radius: 6px; background: #0a303ab3; }
 .home-carousel-controls > button { width: 25px; height: 25px; }

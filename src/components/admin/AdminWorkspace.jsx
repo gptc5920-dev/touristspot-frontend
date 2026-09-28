@@ -27,6 +27,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [draftErrors, setDraftErrors] = useState({})
+  const [focusErrors, setFocusErrors] = useState({})
   const [pendingImage, setPendingImage] = useState(null)
   const [removingImage, setRemovingImage] = useState(false)
   const [deleteCandidate, setDeleteCandidate] = useState(null)
@@ -49,23 +50,23 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
 
   useEffect(() => {
     async function loadAdminData() {
-      try {
-        const [summaryResponse, destinationsResponse, usersResponse] = await Promise.all([
-          apiFetch('/admin/dashboard/'), apiFetch('/admin/destinations/'), apiFetch('/admin/users/'),
-        ])
-        const [summary, destinations, userRecords] = await Promise.all([readApiJson(summaryResponse), readApiJson(destinationsResponse), readApiJson(usersResponse)])
-        if (!summaryResponse.ok) throw new Error(apiErrorMessage(summary, 'Could not load the administration workspace.'))
-        if (!destinationsResponse.ok) throw new Error(apiErrorMessage(destinations, 'Could not load destination records.'))
-        if (!usersResponse.ok) throw new Error(apiErrorMessage(userRecords, 'Could not load user records.'))
-        setDashboard(summary)
-        setRecords(destinations.destinations || [])
-        setUsers(userRecords.users || [])
-        if (destinations.destinations?.[0]) selectDestination(destinations.destinations[0])
-      } catch (requestError) {
-        setError(requestErrorMessage(requestError, 'Could not load the administration workspace.'))
-      } finally {
-        setLoading(false)
+      const requests = ['/admin/dashboard/', '/admin/destinations/', '/admin/users/']
+      const results = await Promise.allSettled(requests.map(async (path) => {
+        const response = await apiFetch(path)
+        const body = await readApiJson(response)
+        if (!response.ok) throw new Error(apiErrorMessage(body, `Could not load ${path}.`))
+        return body
+      }))
+      const [summary, destinations, userRecords] = results
+      if (summary.status === 'fulfilled') setDashboard(summary.value)
+      if (destinations.status === 'fulfilled') {
+        setRecords(destinations.value.destinations || [])
+        if (destinations.value.destinations?.[0]) selectDestination(destinations.value.destinations[0])
       }
+      if (userRecords.status === 'fulfilled') setUsers(userRecords.value.users || [])
+      const failures = results.filter((result) => result.status === 'rejected')
+      if (failures.length) setError(failures.map((result) => requestErrorMessage(result.reason, 'Could not load admin data.')).join(' '))
+      setLoading(false)
     }
     loadAdminData()
   }, [apiFetch])
@@ -92,6 +93,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     setDraft(destinationDraft(destination))
     setMessage('')
     setDraftErrors({})
+    setFocusErrors({})
     setPendingImage(null)
     setRecordsDrawerOpen(false)
   }
@@ -131,6 +133,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     setDraft({ ...EMPTY_DESTINATION })
     setMessage('')
     setDraftErrors({})
+    setFocusErrors({})
     setPendingImage(null)
     setAdminSection('destinations')
     setMobileSidebarOpen(false)
@@ -169,8 +172,8 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
 
     const latitude = Number(draft.latitude)
     const longitude = Number(draft.longitude)
-    if (!Number.isFinite(latitude) || latitude < -90 || latitude > 90) errors.latitude = 'Latitude must be between -90 and 90.'
-    if (!Number.isFinite(longitude) || longitude < -180 || longitude > 180) errors.longitude = 'Longitude must be between -180 and 180.'
+    if (draft.latitude === '' || !Number.isFinite(latitude) || latitude < -90 || latitude > 90) errors.latitude = 'Enter a latitude between -90 and 90.'
+    if (draft.longitude === '' || !Number.isFinite(longitude) || longitude < -180 || longitude > 180) errors.longitude = 'Enter a longitude between -180 and 180.'
     if (!draft.operating_days.length) errors.operating_days = 'Choose at least one operating day.'
     if (!draft.opening_time) errors.opening_time = 'Choose an opening time.'
     if (!draft.closing_time) errors.closing_time = 'Choose a closing time.'
@@ -194,6 +197,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     const validationErrors = validateDestination()
     if (Object.keys(validationErrors).length) {
       setDraftErrors(validationErrors)
+      setFocusErrors(validationErrors)
       setError('Review the highlighted fields before saving this destination.')
       return
     }
@@ -214,30 +218,43 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
       const response = await apiFetch(url, { method: selectedId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       const body = await readApiJson(response)
       if (!response.ok) {
-        if (body?.fields) setDraftErrors(Object.fromEntries(Object.entries(body.fields).map(([field, messages]) => [field, messages?.[0] || 'Review this field.'])))
+        if (body?.fields) {
+          const fieldErrors = Object.fromEntries(Object.entries(body.fields).map(([field, messages]) => [field, messages?.[0] || 'Review this field.']))
+          setDraftErrors(fieldErrors)
+          setFocusErrors(fieldErrors)
+        }
         throw new Error(apiErrorMessage(body, 'Could not save destination.'))
       }
       let saved = body.destination
       if (pendingImage) {
-        const media = new FormData()
-        media.append('image', pendingImage)
-        const imageResponse = await apiFetch(`/admin/destinations/${saved.id}/image/`, { method: 'POST', body: media })
-        const imageBody = await readApiJson(imageResponse)
-        if (!imageResponse.ok) {
+        try {
+          const media = new FormData()
+          media.append('image', pendingImage)
+          const imageResponse = await apiFetch(`/admin/destinations/${saved.id}/image/`, { method: 'POST', body: media })
+          const imageBody = await readApiJson(imageResponse)
+          if (!imageResponse.ok) throw new Error(apiErrorMessage(imageBody, 'Choose another image and try again.'))
+          saved = imageBody.destination
+        } catch (uploadError) {
           setRecords((current) => selectedId ? current.map((item) => item.id === saved.id ? saved : item) : [saved, ...current])
-          selectDestination(saved)
-          const uploadMessage = `Destination saved, but the cover image could not be uploaded. ${apiErrorMessage(imageBody, 'Choose another image and try again.')}`
+          const uploadMessage = `Destination saved, but the cover image could not be uploaded. ${requestErrorMessage(uploadError, 'Choose another image and try again.')}`
+          setSelectedId(saved.id)
+          setDraft(destinationDraft(saved))
+          setDraftErrors({ image: uploadMessage })
+          setFocusErrors({ image: uploadMessage })
           setError(uploadMessage)
           onModal({ title: 'Cover image not uploaded', message: uploadMessage, tone: 'warning' })
           return
         }
-        saved = imageBody.destination
       }
       setRecords((current) => selectedId ? current.map((item) => item.id === saved.id ? saved : item) : [saved, ...current])
       selectDestination(saved)
       setMessage(selectedId ? 'Destination updated.' : 'Destination added to the tourism database.')
-      const dashboardResponse = await apiFetch('/admin/dashboard/')
-      if (dashboardResponse.ok) setDashboard(await readApiJson(dashboardResponse))
+      try {
+        const dashboardResponse = await apiFetch('/admin/dashboard/')
+        if (dashboardResponse.ok) setDashboard(await readApiJson(dashboardResponse))
+      } catch {
+        // A summary refresh must not turn a successful destination save into an error.
+      }
     } catch (requestError) {
       const message = requestErrorMessage(requestError, 'Could not save destination.')
       setError(message)
@@ -293,12 +310,17 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         setSelectedId(null)
         setDraft({ ...EMPTY_DESTINATION })
         setDraftErrors({})
+        setFocusErrors({})
         setPendingImage(null)
       }
       setDeleteCandidate(null)
       setMessage(`${destination.name} was deleted.`)
-      const dashboardResponse = await apiFetch('/admin/dashboard/')
-      if (dashboardResponse.ok) setDashboard(await readApiJson(dashboardResponse))
+      try {
+        const dashboardResponse = await apiFetch('/admin/dashboard/')
+        if (dashboardResponse.ok) setDashboard(await readApiJson(dashboardResponse))
+      } catch {
+        // The destination has already been deleted; keep its successful state.
+      }
     } catch (requestError) {
       const deleteMessage = requestErrorMessage(requestError, 'Could not delete destination.')
       setDeleteCandidate(null)
@@ -326,8 +348,8 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         <span className="sidebar-label">Workspace</span>
         <nav className="sidebar-navigation" aria-label="Admin navigation">
           <button type="button" title="Dashboard" className={adminSection === 'overview' ? 'active' : ''} onClick={() => selectAdminSection('overview')}><LayoutDashboard size={17} /><span>Dashboard</span></button>
-          <button type="button" title="Destination table" className={adminSection === 'table' ? 'active' : ''} onClick={() => selectAdminSection('table')}><Database size={17} /><span>Destination table</span><em>{records.length}</em></button>
-          <button type="button" title="Users table" className={adminSection === 'users' ? 'active' : ''} onClick={() => selectAdminSection('users')}><Users size={17} /><span>Users table</span><em>{users.length}</em></button>
+          <button type="button" title="Destination" className={adminSection === 'table' ? 'active' : ''} onClick={() => selectAdminSection('table')}><Database size={17} /><span>Destination table</span><em>{records.length}</em></button>
+          <button type="button" title="Users" className={adminSection === 'users' ? 'active' : ''} onClick={() => selectAdminSection('users')}><Users size={17} /><span>Users table</span><em>{users.length}</em></button>
           <button type="button" title="Destinations" className={adminSection === 'destinations' ? 'active' : ''} onClick={() => selectAdminSection('destinations')}><MapPinned size={17} /><span>Destinations</span><em>{records.length}</em></button>
           <button type="button" title="General settings" className={adminSection === 'settings' ? 'active' : ''} onClick={() => selectAdminSection('settings')}><Settings2 size={17} /><span>Settings</span></button>
         </nav>
@@ -374,6 +396,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
           dashboard={dashboard}
           draft={draft}
           errors={draftErrors}
+          focusErrors={focusErrors}
           pendingImage={pendingImage}
           removingImage={removingImage}
           saving={saving}

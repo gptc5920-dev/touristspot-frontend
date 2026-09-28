@@ -28,7 +28,7 @@ function DestinationAccordionSection({ sectionId, title, description, icon, open
   </section>
 }
 
-export default function DestinationEditor({ dashboard, draft, errors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onDelete, onSubmit, onToggleList }) {
+export default function DestinationEditor({ dashboard, draft, errors, focusErrors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onDelete, onSubmit, onToggleList }) {
   const [showMapModal, setShowMapModal] = useState(false)
   const [openSection, setOpenSection] = useState('basic')
   const activitySuggestions = CATEGORY_ACTIVITY_SUGGESTIONS[draft.category] || ['Sightseeing', 'Photography', 'Guided tour']
@@ -41,8 +41,8 @@ export default function DestinationEditor({ dashboard, draft, errors, pendingIma
     draft.interests.length > 0,
     draft.area.trim().length > 0,
     draft.address.trim().length >= 5,
-    Number.isFinite(Number(draft.latitude)),
-    Number.isFinite(Number(draft.longitude)),
+    draft.latitude !== '' && Number.isFinite(Number(draft.latitude)),
+    draft.longitude !== '' && Number.isFinite(Number(draft.longitude)),
     draft.operating_days.length > 0,
     Boolean(draft.opening_time && draft.closing_time),
   ]
@@ -62,7 +62,7 @@ export default function DestinationEditor({ dashboard, draft, errors, pendingIma
   }, [pendingImagePreview])
 
   useEffect(() => {
-    const firstError = Object.keys(errors).find((field) => errors[field])
+    const firstError = Object.keys(focusErrors).find((field) => focusErrors[field])
     if (!firstError) return undefined
     const sectionByField = {
       name: 'basic', category: 'basic', description: 'basic', interests: 'basic',
@@ -73,7 +73,7 @@ export default function DestinationEditor({ dashboard, draft, errors, pendingIma
     setOpenSection(sectionByField[firstError] || 'basic')
     const focusTimer = window.setTimeout(() => document.querySelector('.admin-editor .field-invalid')?.focus(), 50)
     return () => window.clearTimeout(focusTimer)
-  }, [errors])
+  }, [focusErrors])
 
   function toggleTextSuggestion(field, value) {
     const values = draft[field].split(',').map((item) => item.trim()).filter(Boolean)
@@ -119,7 +119,7 @@ export default function DestinationEditor({ dashboard, draft, errors, pendingIma
           <label>Latitude <b>*</b><input className={invalidClass('latitude')} aria-invalid={Boolean(errors.latitude)} type="number" min="-90" max="90" step="0.000001" value={draft.latitude} onChange={(event) => onChange('latitude', event.target.value)} placeholder="8.300095" /><FieldError field="latitude" errors={errors} /></label>
           <label>Longitude <b>*</b><input className={invalidClass('longitude')} aria-invalid={Boolean(errors.longitude)} type="number" min="-180" max="180" step="0.000001" value={draft.longitude} onChange={(event) => onChange('longitude', event.target.value)} placeholder="123.505903" /><FieldError field="longitude" errors={errors} /></label>
         </div>
-        <div className="form-suggestion"><Info size={14} /><span>Use the embedded map to search, preview, or apply your current location.</span>{Number.isFinite(Number(draft.latitude)) && Number.isFinite(Number(draft.longitude)) && <a href={`https://www.google.com/maps?q=${draft.latitude},${draft.longitude}`} target="_blank" rel="noreferrer">Open full map <ArrowRight size={13} /></a>}</div>
+        <div className="form-suggestion"><Info size={14} /><span>Choose a pin on the map, then provide the complete visitor-facing address above.</span>{draft.latitude !== '' && draft.longitude !== '' && Number.isFinite(Number(draft.latitude)) && Number.isFinite(Number(draft.longitude)) && <a href={`https://www.google.com/maps?q=${draft.latitude},${draft.longitude}`} target="_blank" rel="noreferrer">Open full map <ArrowRight size={13} /></a>}</div>
       </DestinationAccordionSection>
 
       <DestinationAccordionSection sectionId="schedule" title="Schedule and availability" description="Operating days, opening hours, seasonal dates, duration, and fees" icon={<CalendarRange size={17} />} openSection={openSection} onToggle={setOpenSection} complete={sectionCompletion.schedule}>

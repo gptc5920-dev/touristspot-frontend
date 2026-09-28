@@ -6,6 +6,7 @@ import { AdminLoginDialog, AuthDialog } from './components/auth/AuthDialogs'
 import { AppModal } from './components/common/Dialogs'
 import LocationMapModal from './components/common/LocationMapModal'
 import ClientHomePage from './components/client/ClientHomePage'
+import ClientDiscoverPage from './components/client/ClientDiscoverPage'
 import DestinationFeedbackDialog from './components/client/DestinationFeedbackDialog'
 import TouristProfilePage from './components/client/TouristProfilePage'
 import PlannerPage from './components/planner/PlannerPage'
@@ -56,7 +57,7 @@ function App() {
   useEffect(() => {
     if (auth.checking) return
     if (auth.user.role === 'admin' && view !== 'admin') navigateTo('admin', { replace: true })
-    if (auth.user.role === 'tourist' && !auth.user.preferences_completed && !['home', 'profile', 'preferences', 'admin'].includes(view)) navigateTo('preferences', { replace: true })
+    if (auth.user.role === 'tourist' && !auth.user.preferences_completed && !['home', 'discover', 'profile', 'preferences', 'admin'].includes(view)) navigateTo('preferences', { replace: true })
   }, [auth.checking, auth.user.preferences_completed, auth.user.role, navigateTo, view])
 
   function requireTouristSignIn() {
@@ -66,18 +67,18 @@ function App() {
   }
 
   function showDiscover() {
-    navigateTo('home')
-    window.setTimeout(() => document.getElementById('featured-destinations')?.scrollIntoView({ behavior: 'smooth' }), 0)
+    navigateTo('discover')
   }
 
   const isAdminRoute = view === 'admin'
   const isProfileRoute = view === 'profile'
   const isHomeRoute = view === 'home'
+  const isDiscoverRoute = view === 'discover'
   const isRecommendationsRoute = view === 'recommendations'
   const showAdminWorkspace = isAdminRoute && !auth.checking && auth.user.role === 'admin'
 
   return (
-    <div className={`app-shell ${!isAdminRoute ? 'with-mobile-nav' : ''} ${isHomeRoute ? 'home-route' : ''}`}>
+    <div className={`app-shell ${!isAdminRoute ? 'with-mobile-nav' : ''} ${isHomeRoute ? 'home-route' : ''} ${isDiscoverRoute ? 'discover-route' : ''}`}>
       {!isAdminRoute && <header className="topbar">
         <a className="brand" href="/" aria-label={`${settings.site_name} home`} onClick={(event) => { event.preventDefault(); navigateTo('home') }}>
           <span className="brand-mark">{settings.logo_url ? <img className="h-full w-full object-contain" src={settings.logo_url} alt="" /> : <Navigation size={20} strokeWidth={2.5} />}</span>
@@ -86,13 +87,13 @@ function App() {
         <nav className="main-nav" aria-label="Primary navigation">
           <button type="button" className={isHomeRoute ? 'active' : ''} onClick={() => navigateTo('home')}>Home</button>
           <button type="button" className={view === 'planner' ? 'active' : ''} onClick={() => navigateTo('planner')}>Planner</button>
-          <button type="button" onClick={showDiscover}>Discover</button>
+          <button type="button" className={isDiscoverRoute ? 'active' : ''} onClick={showDiscover}>Discover</button>
           {auth.user.role === 'admin' && <button type="button" onClick={() => navigateTo('admin')}><LayoutDashboard size={15} /> Dashboard</button>}
           {auth.user.role === 'tourist' && <button type="button" className={isRecommendationsRoute ? 'active' : ''} onClick={() => navigateTo(auth.user.preferences_completed ? 'recommendations' : 'preferences')}><Sparkles size={15} /> Recommendations</button>}
           {auth.user.role === 'tourist' && <button type="button" className={isProfileRoute ? 'active' : ''} onClick={() => navigateTo('profile')}><UserRound size={15} /> Profile</button>}
         </nav>
         <div className="topbar-actions">
-          {!isHomeRoute && <span className="verified"><BadgeCheck size={16} /> Verified tourism data</span>}
+          {!isHomeRoute && !isDiscoverRoute && <span className="verified"><BadgeCheck size={16} /> Verified tourism data</span>}
           {view === 'planner' && <button className="icon-text-button" type="button" onClick={planner.shareItinerary}><Share2 size={16} /> Share</button>}
           {auth.user.is_authenticated
             ? <><button className="account-name account-button" type="button" onClick={() => navigateTo(auth.user.role === 'admin' ? 'admin' : 'profile')}><UserRound size={15} /> {auth.user.display_name || auth.user.email || auth.user.username}</button><button className="icon-text-button" type="button" onClick={() => auth.logout()}><LogOut size={16} /> Sign out</button></>
@@ -103,7 +104,7 @@ function App() {
       {!isAdminRoute && <nav className="mobile-nav" aria-label="Mobile navigation">
         <button type="button" className={isHomeRoute ? 'active' : ''} aria-current={isHomeRoute ? 'page' : undefined} onClick={() => navigateTo('home')}><Compass size={18} /><span>Home</span></button>
         <button type="button" className={view === 'planner' ? 'active' : ''} aria-current={view === 'planner' ? 'page' : undefined} onClick={() => navigateTo('planner')}><Route size={18} /><span>Planner</span></button>
-        <button type="button" onClick={showDiscover}><MapPin size={18} /><span>Discover</span></button>
+        <button type="button" className={isDiscoverRoute ? 'active' : ''} aria-current={isDiscoverRoute ? 'page' : undefined} onClick={showDiscover}><MapPin size={18} /><span>Discover</span></button>
         {auth.user.role === 'admin' && <button type="button" onClick={() => navigateTo('admin')}><LayoutDashboard size={18} /><span>Dashboard</span></button>}
         {auth.user.role === 'tourist' && <button type="button" className={['preferences', 'recommendations'].includes(view) ? 'active' : ''} aria-current={['preferences', 'recommendations'].includes(view) ? 'page' : undefined} onClick={() => navigateTo(auth.user.preferences_completed ? 'recommendations' : 'preferences')}><Sparkles size={18} /><span>Matches</span></button>}
         {auth.user.role === 'tourist' && <button type="button" className={isProfileRoute ? 'active' : ''} aria-current={isProfileRoute ? 'page' : undefined} onClick={() => navigateTo('profile')}><UserRound size={18} /><span>Profile</span></button>}
@@ -141,10 +142,12 @@ function App() {
             onUpdatePreferences={() => navigateTo('preferences')}
             onAddToItinerary={planner.addRecommendationToPlanner}
           />
-        : isProfileRoute
+          : isDiscoverRoute
+          ? <ClientDiscoverPage destinations={planner.destinations} loading={planner.loading} error={error} onPlan={planner.startPlanning} onFeedback={setFeedbackDestination} />
+          : isProfileRoute
           ? <TouristProfilePage apiFetch={apiFetch} user={auth.user} checking={auth.checking} onSignIn={() => auth.openAuth('signin')} onSignUp={() => auth.openAuth('signup')} onBack={() => navigateTo('planner')} onUserChange={auth.setUser} onProfileSaved={recommendations.syncProfilePreferences} onUsePreferences={planner.applyProfilePreferences} />
           : isHomeRoute
-            ? <ClientHomePage destinations={planner.destinations} loading={planner.loading} user={auth.user} onPlan={planner.startPlanning} onSignUp={() => auth.openAuth('signup')} onProfile={() => navigateTo('profile')} onFeedback={setFeedbackDestination} />
+            ? <ClientHomePage destinations={planner.destinations} loading={planner.loading} user={auth.user} onPlan={planner.startPlanning} onDiscover={showDiscover} onSignUp={() => auth.openAuth('signup')} onProfile={() => navigateTo('profile')} onFeedback={setFeedbackDestination} />
             : <PlannerPage
               form={planner.form}
               destinations={planner.destinations}

@@ -77,7 +77,7 @@ function App() {
   const showAdminWorkspace = isAdminRoute && !auth.checking && auth.user.role === 'admin'
 
   return (
-    <div className={`app-shell ${!isAdminRoute ? 'with-mobile-nav' : ''}`}>
+    <div className={`app-shell ${!isAdminRoute ? 'with-mobile-nav' : ''} ${isHomeRoute ? 'home-route' : ''}`}>
       {!isAdminRoute && <header className="topbar">
         <a className="brand" href="/" aria-label={`${settings.site_name} home`} onClick={(event) => { event.preventDefault(); navigateTo('home') }}>
           <span className="brand-mark">{settings.logo_url ? <img className="h-full w-full object-contain" src={settings.logo_url} alt="" /> : <Navigation size={20} strokeWidth={2.5} />}</span>
@@ -92,7 +92,7 @@ function App() {
           {auth.user.role === 'tourist' && <button type="button" className={isProfileRoute ? 'active' : ''} onClick={() => navigateTo('profile')}><UserRound size={15} /> Profile</button>}
         </nav>
         <div className="topbar-actions">
-          <span className="verified"><BadgeCheck size={16} /> Verified tourism data</span>
+          {!isHomeRoute && <span className="verified"><BadgeCheck size={16} /> Verified tourism data</span>}
           {view === 'planner' && <button className="icon-text-button" type="button" onClick={planner.shareItinerary}><Share2 size={16} /> Share</button>}
           {auth.user.is_authenticated
             ? <><button className="account-name account-button" type="button" onClick={() => navigateTo(auth.user.role === 'admin' ? 'admin' : 'profile')}><UserRound size={15} /> {auth.user.display_name || auth.user.email || auth.user.username}</button><button className="icon-text-button" type="button" onClick={() => auth.logout()}><LogOut size={16} /> Sign out</button></>

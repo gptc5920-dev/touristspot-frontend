@@ -44,19 +44,19 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
   }
 
   return <main className="client-home">
-    <section className="home-hero">
+    <div className="home-hero-shell"><section className="home-hero">
       <div className="home-hero-copy">
-        <span className="home-kicker"><Sparkles size={15} /> Explore {settings.municipality_name}</span>
+        <span className="home-kicker"><BadgeCheck size={15} /> Verified tourism data</span>
         <h1>{settings.tagline}</h1>
-        <p>Build a practical itinerary around verified destinations, your budget, preferred pace, and the experiences you care about most.</p>
+        <p>Build a practical itinerary around curated, verified destinations, personalized to your budget and preferred pace.</p>
+        <div className="home-hero-stats" aria-label="Travel Osmena overview"><div><strong>{destinations.length || '—'}</strong><span>Verified destinations</span></div><div><strong>{categoryCount || '—'}</strong><span>Travel categories</span></div><div><strong>{freeDestinationCount}</strong><span>Free entrances</span></div></div>
         <div className="home-hero-actions"><button type="button" className="home-primary-action" onClick={() => onPlan()}><WandSparkles size={18} /> Build my itinerary <ArrowRight size={17} /></button>{user.role === 'tourist' ? <button type="button" className="home-secondary-action" onClick={onProfile}><UserRound size={17} /> My travel profile</button> : <button type="button" className="home-secondary-action" onClick={onSignUp}><UserPlus size={17} /> Create tourist account</button>}</div>
-        <div className="home-hero-stats" aria-label="Travel Osmena overview"><div><strong>{destinations.length || '—'}</strong><span>Verified places</span></div><div><strong>{categoryCount || '—'}</strong><span>Travel categories</span></div><div><strong>{freeDestinationCount}</strong><span>Free entrances</span></div></div>
       </div>
-      <div className="home-hero-visual" role="region" aria-roledescription="carousel" aria-label="Top three destinations">
+      <div className="home-visual-stage"><div className="home-hero-visual" role="region" aria-roledescription="carousel" aria-label="Top three destinations">
         {featured?.image_url ? <img key={featured.id} className="home-carousel-image" src={featured.image_url} alt={featured.name} /> : <div className="home-hero-placeholder"><MapPinned size={48} /><span>Verified local destinations will appear here</span></div>}
         <div className="home-visual-shade" />
-        {featured && <div className="home-featured-card" aria-live="polite" aria-atomic="true"><span>Top destination {activeSlide + 1} of {topDestinations.length} &middot; {featured.category}</span><h2>{featured.name}</h2><p><MapPin size={14} /> {featured.area}</p><div><strong>{peso.format(Number(featured.entrance_fee || 0))}</strong><button type="button" onClick={() => onPlan(featured.id)}>Plan this stop <ArrowRight size={14} /></button></div></div>}
-        <div className="home-ai-badge"><Sparkles size={16} /><span><strong>Hybrid recommendations</strong><small>Personalized to your trip</small></span></div>
+        <a className="home-featured-card" href="#featured-destinations">Explore Verified Destinations <ArrowRight size={16} /></a>
+        <div className="home-ai-badge"><Sparkles size={16} /><span><strong>Personalized Hybrid Recommendations</strong><small>Personalized to your trip</small></span></div>
         {topDestinations.length > 1 && <div className="home-carousel-controls">
           <button type="button" onClick={() => moveCarousel(-1)} aria-label="Show previous top destination"><ChevronLeft size={17} /></button>
           <button type="button" onClick={() => setCarouselPaused((current) => !current)} aria-label={carouselPaused ? 'Play destination carousel' : 'Pause destination carousel'}>{carouselPaused ? <Play size={15} /> : <Pause size={15} />}</button>
@@ -64,7 +64,12 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
           <div className="home-carousel-dots" role="group" aria-label="Choose a top destination">{topDestinations.map((destination, index) => <button key={destination.id} type="button" className={activeSlide === index ? 'active' : ''} aria-current={activeSlide === index ? 'true' : undefined} aria-label={`Show ${destination.name}`} onClick={() => { setActiveSlide(index); setCarouselPaused(true) }} />)}</div>
         </div>}
       </div>
-    </section>
+      {topDestinations.map((destination, index) => <button type="button" key={destination.id} className={`home-floating-destination home-floating-destination-${index + 1}`} onClick={() => onPlan(destination.id)} aria-label={`Plan a visit to ${destination.name}`}>
+        {destination.image_url ? <img src={destination.image_url} alt="" /> : <span className="home-floating-placeholder"><MapPin size={19} /></span>}
+        <span className="home-floating-copy"><strong>{destination.name}</strong><small><Star size={11} fill="currentColor" /> {destination.average_rating || 'New'}{destination.average_rating ? ' / 5' : ''}</small></span>
+      </button>)}
+      </div>
+    </section></div>
 
     <section className="home-trust-strip" aria-label="Planning benefits">
       <div><BadgeCheck size={20} /><span><strong>Tourism-office verified</strong><small>Plan from maintained local records</small></span></div>

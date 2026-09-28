@@ -4,6 +4,11 @@ export function apiEndpoint(path) {
   return `${API_BASE_URL}/${path.replace(/^\//, '')}`
 }
 
+export function resolveMediaUrl(url) {
+  if (!url || !url.startsWith('/media/')) return url || ''
+  return `${new URL(API_BASE_URL, window.location.origin).origin}${url}`
+}
+
 export async function readApiJson(response) {
   const payload = await response.text()
   if (!payload) return {}

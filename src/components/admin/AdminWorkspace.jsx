@@ -4,7 +4,7 @@ import {
   ListChecks, LogOut, MapPin, MapPinned, Menu, Navigation, PanelLeftClose,
   PanelLeftOpen, Plus, RefreshCw, Settings2, Users, X,
 } from '../../fontawesome-icons'
-import { readApiJson } from '../../api'
+import { readApiJson, resolveMediaUrl } from '../../api'
 import { DESTINATION_CATEGORIES, EMPTY_DESTINATION } from '../../config/travel'
 import { apiErrorMessage, peso, requestErrorMessage } from '../../lib/app'
 import { ConfirmDialog } from '../common/Dialogs'
@@ -13,6 +13,8 @@ import AdminDashboardOverview from './AdminDashboardOverview'
 import AdminSettings from './AdminSettings'
 import { DestinationTable, UsersTable } from './AdminTables'
 import DestinationEditor from './DestinationEditor'
+
+const withMediaUrl = (destination) => ({ ...destination, image_url: resolveMediaUrl(destination.image_url) })
 
 export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   const { settings } = useSiteSettings()
@@ -59,8 +61,8 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
       const [summary, destinations, userRecords] = results
       if (summary.status === 'fulfilled') setDashboard(summary.value)
       if (destinations.status === 'fulfilled') {
-        setRecords(destinations.value.destinations || [])
-        if (destinations.value.destinations?.[0]) selectDestination(destinations.value.destinations[0])
+        setRecords((destinations.value.destinations || []).map(withMediaUrl))
+        if (destinations.value.destinations?.[0]) selectDestination(withMediaUrl(destinations.value.destinations[0]))
       }
       if (userRecords.status === 'fulfilled') setUsers(userRecords.value.users || [])
       const failures = results.filter((result) => result.status === 'rejected')
@@ -224,7 +226,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         }
         throw new Error(apiErrorMessage(body, 'Could not save destination.'))
       }
-      let saved = body.destination
+      let saved = withMediaUrl(body.destination)
       if (pendingImage) {
         try {
           const media = new FormData()
@@ -232,7 +234,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
           const imageResponse = await apiFetch(`/admin/destinations/${saved.id}/image/`, { method: 'POST', body: media })
           const imageBody = await readApiJson(imageResponse)
           if (!imageResponse.ok) throw new Error(apiErrorMessage(imageBody, 'Choose another image and try again.'))
-          saved = imageBody.destination
+          saved = withMediaUrl(imageBody.destination)
         } catch (uploadError) {
           setRecords((current) => selectedId ? current.map((item) => item.id === saved.id ? saved : item) : [saved, ...current])
           const uploadMessage = `Destination saved, but the cover image could not be uploaded. ${requestErrorMessage(uploadError, 'Choose another image and try again.')}`
@@ -276,7 +278,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
       const response = await apiFetch(`/admin/destinations/${selectedId}/image/`, { method: 'DELETE' })
       const body = await readApiJson(response)
       if (!response.ok) throw new Error(apiErrorMessage(body, 'Could not remove the cover image.'))
-      const saved = body.destination
+      const saved = withMediaUrl(body.destination)
       setRecords((current) => current.map((item) => item.id === saved.id ? saved : item))
       selectDestination(saved)
       onModal({ title: 'Cover image removed', message: 'The destination cover image was removed.', tone: 'success' })

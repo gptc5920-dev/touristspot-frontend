@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { readApiJson } from '../api'
+import { readApiJson, resolveMediaUrl } from '../api'
 import { INITIAL_PLANNER_FORM } from '../config/travel'
 import { apiErrorMessage, requestErrorMessage } from '../lib/app'
 
@@ -29,7 +29,9 @@ export default function usePlanner({
         const response = await apiFetch('/destinations/')
         if (!response.ok) throw new Error('Destination data is unavailable.')
         const body = await readApiJson(response)
-        if (!cancelled) setDestinations(body.destinations || [])
+        if (!cancelled) setDestinations((body.destinations || []).map((destination) => ({
+          ...destination, image_url: resolveMediaUrl(destination.image_url),
+        })))
       } catch (requestError) {
         if (!cancelled) onError(requestErrorMessage(requestError, 'Could not load verified destinations.'))
       } finally {

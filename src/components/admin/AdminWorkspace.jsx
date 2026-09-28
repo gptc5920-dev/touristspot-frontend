@@ -332,8 +332,8 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   const accountInitial = accountLabel.charAt(0).toUpperCase()
   const adminSectionCopy = {
     overview: ['Dashboard overview', 'Track destination readiness, content coverage, and traveler activity.'],
-    table: ['Destination table', 'Search, filter, and review every tourism destination record in one place.'],
-    users: ['Users table', 'Review tourist and administrator accounts, preferences, and platform activity.'],
+    table: ['Destination', 'Search, filter, and review every tourism destination record in one place.'],
+    users: ['Users', 'Review tourist and administrator accounts, preferences, and platform activity.'],
     destinations: ['Destination management', 'Create, verify, and maintain the destination records used by the planner.'],
     settings: ['General settings', 'Manage the logo, site identity, tourism office details, and public contact information.'],
   }[adminSection]

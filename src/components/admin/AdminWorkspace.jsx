@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import {
-  BadgeCheck, CalendarDays, CircleAlert, Database, LayoutDashboard,
+  CalendarDays, CircleAlert, Database, LayoutDashboard,
   ListChecks, LogOut, MapPin, MapPinned, Menu, Navigation, PanelLeftClose,
   PanelLeftOpen, Plus, RefreshCw, Settings2, Users, X,
 } from '../../fontawesome-icons'
@@ -24,7 +24,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   const [draft, setDraft] = useState(EMPTY_DESTINATION)
   const [saving, setSaving] = useState(false)
   const [loading, setLoading] = useState(true)
-  const [message, setMessage] = useState('')
   const [error, setError] = useState('')
   const [draftErrors, setDraftErrors] = useState({})
   const [focusErrors, setFocusErrors] = useState({})
@@ -91,7 +90,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   function selectDestination(destination) {
     setSelectedId(destination.id)
     setDraft(destinationDraft(destination))
-    setMessage('')
     setDraftErrors({})
     setFocusErrors({})
     setPendingImage(null)
@@ -131,7 +129,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   function startNewDestination() {
     setSelectedId(null)
     setDraft({ ...EMPTY_DESTINATION })
-    setMessage('')
     setDraftErrors({})
     setFocusErrors({})
     setPendingImage(null)
@@ -164,6 +161,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   function validateDestination() {
     const errors = {}
     if (draft.name.trim().length < 3) errors.name = 'Enter a destination name with at least 3 characters.'
+    if (records.some((item) => item.id !== selectedId && item.name.trim().toLocaleLowerCase() === draft.name.trim().toLocaleLowerCase() && item.address.trim().toLocaleLowerCase() === draft.address.trim().toLocaleLowerCase())) errors.name = 'This destination name and address already exist.'
     if (!DESTINATION_CATEGORIES.includes(draft.category)) errors.category = 'Choose a category from the list.'
     if (draft.description.trim().length < 20) errors.description = 'Add a helpful description with at least 20 characters.'
     if (!draft.interests.length) errors.interests = 'Choose at least one traveler interest.'
@@ -198,13 +196,14 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     if (Object.keys(validationErrors).length) {
       setDraftErrors(validationErrors)
       setFocusErrors(validationErrors)
-      setError('Review the highlighted fields before saving this destination.')
+      onModal({ title: 'Review destination details', message: 'Check the highlighted fields, then save again.', tone: 'warning' })
       return
     }
     setSaving(true)
     setError('')
     const payload = {
       name: draft.name, description: draft.description, category: draft.category, area: draft.area, address: draft.address,
+      province_code: draft.province_code, municipality_code: draft.municipality_code, barangay_code: draft.barangay_code,
       latitude: draft.latitude, longitude: draft.longitude, opening_time: draft.opening_time, closing_time: draft.closing_time, visit_minutes: draft.visit_minutes,
       entrance_fee: draft.entrance_fee, interests: draft.interests, operating_days: draft.operating_days,
       availability_start: draft.availability_start || null, availability_end: draft.availability_end || null,
@@ -241,14 +240,13 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
           setDraft(destinationDraft(saved))
           setDraftErrors({ image: uploadMessage })
           setFocusErrors({ image: uploadMessage })
-          setError(uploadMessage)
           onModal({ title: 'Cover image not uploaded', message: uploadMessage, tone: 'warning' })
           return
         }
       }
       setRecords((current) => selectedId ? current.map((item) => item.id === saved.id ? saved : item) : [saved, ...current])
       selectDestination(saved)
-      setMessage(selectedId ? 'Destination updated.' : 'Destination added to the tourism database.')
+      onModal({ title: selectedId ? 'Destination updated' : 'Destination added', message: `${saved.name} was saved successfully.`, tone: 'success' })
       try {
         const dashboardResponse = await apiFetch('/admin/dashboard/')
         if (dashboardResponse.ok) setDashboard(await readApiJson(dashboardResponse))
@@ -257,7 +255,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
       }
     } catch (requestError) {
       const message = requestErrorMessage(requestError, 'Could not save destination.')
-      setError(message)
       onModal({ title: 'Could not save destination', message, tone: 'error' })
     } finally {
       setSaving(false)
@@ -282,9 +279,9 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
       const saved = body.destination
       setRecords((current) => current.map((item) => item.id === saved.id ? saved : item))
       selectDestination(saved)
-      setMessage('Cover image removed.')
+      onModal({ title: 'Cover image removed', message: 'The destination cover image was removed.', tone: 'success' })
     } catch (requestError) {
-      setError(requestErrorMessage(requestError, 'Could not remove the cover image.'))
+      onModal({ title: 'Could not remove cover image', message: requestErrorMessage(requestError, 'Could not remove the cover image.'), tone: 'error' })
     } finally {
       setRemovingImage(false)
     }
@@ -293,7 +290,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   function requestDestinationDelete(destination) {
     setDeleteCandidate(destination)
     setError('')
-    setMessage('')
   }
 
   async function deleteDestination() {
@@ -314,7 +310,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         setPendingImage(null)
       }
       setDeleteCandidate(null)
-      setMessage(`${destination.name} was deleted.`)
+      onModal({ title: 'Destination deleted', message: `${destination.name} was deleted.`, tone: 'success' })
       try {
         const dashboardResponse = await apiFetch('/admin/dashboard/')
         if (dashboardResponse.ok) setDashboard(await readApiJson(dashboardResponse))
@@ -324,7 +320,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     } catch (requestError) {
       const deleteMessage = requestErrorMessage(requestError, 'Could not delete destination.')
       setDeleteCandidate(null)
-      setError(deleteMessage)
       onModal({ title: 'Could not delete destination', message: deleteMessage, tone: 'error' })
     } finally {
       setDeleting(false)
@@ -366,16 +361,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         <div className="admin-heading-actions">{adminSection === 'destinations' && <button type="button" className="admin-secondary-button" aria-expanded={recordsDrawerOpen} onClick={() => setRecordsDrawerOpen(true)}><ListChecks size={16} /> Destination records <span>{records.length}</span></button>}{['overview', 'table', 'destinations'].includes(adminSection) && <button type="button" className="admin-primary-button" onClick={startNewDestination}><Plus size={17} /> Add destination</button>}</div>
       </div>
 
-      <nav className="admin-section-nav" aria-label="Administration sections">
-        <button type="button" className={adminSection === 'overview' ? 'active' : ''} onClick={() => selectAdminSection('overview')}><LayoutDashboard size={16} /> Overview</button>
-        <button type="button" className={adminSection === 'table' ? 'active' : ''} onClick={() => selectAdminSection('table')}><Database size={16} /> Table <span>{records.length}</span></button>
-        <button type="button" className={adminSection === 'users' ? 'active' : ''} onClick={() => selectAdminSection('users')}><Users size={16} /> Users <span>{users.length}</span></button>
-        <button type="button" className={adminSection === 'destinations' ? 'active' : ''} onClick={() => selectAdminSection('destinations')}><MapPinned size={16} /> Destinations <span>{records.length}</span></button>
-        <button type="button" className={adminSection === 'settings' ? 'active' : ''} onClick={() => selectAdminSection('settings')}><Settings2 size={16} /> Settings</button>
-      </nav>
-
       {error && <div className="alert error"><CircleAlert size={18} /><span>{error}</span><button type="button" title="Dismiss message" onClick={() => setError('')}><X size={16} /></button></div>}
-      {message && <div className="alert success"><BadgeCheck size={18} /><span>{message}</span><button type="button" title="Dismiss message" onClick={() => setMessage('')}><X size={16} /></button></div>}
 
       {adminSection === 'overview'
         ? <AdminDashboardOverview dashboard={dashboard} loading={loading} onManage={() => selectAdminSection('destinations')} onEdit={editDestination} />
@@ -393,6 +379,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         </aside>
 
         <DestinationEditor
+          apiFetch={apiFetch}
           dashboard={dashboard}
           draft={draft}
           errors={draftErrors}

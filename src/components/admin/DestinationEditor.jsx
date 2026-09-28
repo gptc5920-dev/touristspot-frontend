@@ -9,6 +9,7 @@ import {
   TRANSPORT_SUGGESTIONS,
 } from '../../config/travel'
 import LocationMapModal from '../common/LocationMapModal'
+import LocationFields from './LocationFields'
 
 function FieldError({ field, errors }) {
   if (!errors[field]) return null
@@ -28,7 +29,7 @@ function DestinationAccordionSection({ sectionId, title, description, icon, open
   </section>
 }
 
-export default function DestinationEditor({ dashboard, draft, errors, focusErrors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onDelete, onSubmit, onToggleList }) {
+export default function DestinationEditor({ apiFetch, dashboard, draft, errors, focusErrors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onDelete, onSubmit, onToggleList }) {
   const [showMapModal, setShowMapModal] = useState(false)
   const [openSection, setOpenSection] = useState('basic')
   const activitySuggestions = CATEGORY_ACTIVITY_SUGGESTIONS[draft.category] || ['Sightseeing', 'Photography', 'Guided tour']
@@ -110,6 +111,7 @@ export default function DestinationEditor({ dashboard, draft, errors, focusError
       </DestinationAccordionSection>
 
       <DestinationAccordionSection sectionId="location" title="Location" description="Address, map coordinates, and route-planning pin" icon={<MapPinned size={17} />} openSection={openSection} onToggle={setOpenSection} complete={sectionCompletion.location}>
+        <LocationFields apiFetch={apiFetch} draft={draft} onChange={onChange} />
         <div className="accordion-panel-actions"><button type="button" className="open-map-button" onClick={() => setShowMapModal(true)}><MapPinned size={15} /> Choose on map</button></div>
         <div className="admin-form-grid two-columns">
           <label>Area or barangay <b>*</b><input className={invalidClass('area')} aria-invalid={Boolean(errors.area)} value={draft.area} maxLength="100" onChange={(event) => onChange('area', event.target.value)} placeholder="e.g. Poblacion" /><FieldError field="area" errors={errors} /></label>

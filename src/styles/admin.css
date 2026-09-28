@@ -52,6 +52,19 @@
 }
 
 /* Larger admin typography for comfortable reading and data entry. */
+.admin-shell .destination-editor { display: flex; flex-direction: column; max-height: calc(100dvh - 178px); min-height: 520px; }
+.admin-shell .destination-form { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.admin-shell .destination-accordion-panel { max-height: min(48dvh, 500px); overflow-y: auto; }
+.admin-shell .destination-accordion-trigger { min-height: 56px; }
+.admin-shell .accordion-heading-copy strong { font-size: 13px; }
+.admin-shell .accordion-heading-copy small, .admin-shell .accordion-status { font-size: 10px; }
+.admin-shell .destination-form label, .admin-shell .destination-form legend { font-size: 12px; }
+.location-options { margin: 12px 0 16px; padding: 13px; border: 1px solid #dbe8f1; border-radius: 8px; background: #f7fbfe; }
+.location-options-title { display: flex; align-items: center; gap: 7px; margin-bottom: 11px; color: #265c7d; font-size: 12px; font-weight: 750; }
+.location-options .admin-form-grid.three-columns { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.location-options-error { margin: 8px 0 0; color: #a3552f; font-size: 11px; }
+@media (max-width: 900px) { .admin-shell .destination-editor { max-height: calc(100dvh - 175px); } .location-options .admin-form-grid.three-columns { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 560px) { .admin-shell .destination-editor { max-height: calc(100dvh - 168px); min-height: 410px; } .location-options .admin-form-grid.three-columns { grid-template-columns: 1fr; } .admin-shell .destination-editor-heading { padding-top: 15px; padding-bottom: 12px; } .admin-shell .destination-accordion-panel { max-height: 42dvh; } }
 .admin-shell .admin-brand strong { font-size: 15px; }.admin-shell .admin-brand small { font-size: 11px; }.admin-shell .sidebar-label { font-size: 11px; }.admin-shell .sidebar-navigation button { font-size: 13px; }.admin-shell .sidebar-navigation em { font-size: 10px; }.admin-shell .admin-sidebar-signout { font-size: 11px; }
 .admin-shell .admin-breadcrumb, .admin-shell .admin-breadcrumb strong, .admin-shell .admin-today { font-size: 12px; }.admin-shell .admin-account-copy strong { font-size: 12px; }.admin-shell .admin-account-copy small { font-size: 10px; }.admin-shell .admin-avatar { font-size: 12px; }
 .admin-shell .admin-page-heading h1 { font-size: 29px; }.admin-shell .admin-page-heading p { font-size: 13px; }.admin-shell .eyebrow { font-size: 11px; }.admin-shell .admin-primary-button, .admin-secondary-button { min-height: 39px; font-size: 12px; }.admin-secondary-button > span { font-size: 10px; }

@@ -61,6 +61,7 @@ export const INITIAL_PLANNER_FORM = {
 
 export const EMPTY_DESTINATION = {
   name: '', description: '', category: '', area: '', address: '', latitude: '', longitude: '',
+  province_code: '', municipality_code: '', barangay_code: '',
   opening_time: '08:00', closing_time: '17:00', visit_minutes: '60', entrance_fee: '0',
   interests: [], operating_days: [], availability_start: '', availability_end: '', activities: [],
   accessibility: '', contact_information: '', transportation_options: [], safety_reminders: [],

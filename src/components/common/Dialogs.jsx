@@ -1,8 +1,8 @@
 import { useEffect } from 'react'
-import { CircleAlert, RefreshCw, Trash2, TriangleAlert, X } from '../../fontawesome-icons'
+import { BadgeCheck, CircleAlert, RefreshCw, Trash2, TriangleAlert, X } from '../../fontawesome-icons'
 
 export function AppModal({ title, message, tone, onClose }) {
-  return <div className="modal-backdrop" role="presentation"><section className={`feedback-dialog ${tone || 'error'}`} role="dialog" aria-modal="true" aria-labelledby="feedback-title"><button className="dialog-close" type="button" title="Close message" onClick={onClose}><X size={18} /></button><span className="feedback-icon"><CircleAlert size={22} /></span><h2 id="feedback-title">{title}</h2><p>{message}</p><button className="admin-primary-button feedback-close" type="button" onClick={onClose}>Understood</button></section></div>
+  return <div className="modal-backdrop" role="presentation"><section className={`feedback-dialog ${tone || 'error'}`} role="dialog" aria-modal="true" aria-labelledby="feedback-title"><button className="dialog-close" type="button" title="Close message" onClick={onClose}><X size={18} /></button><span className="feedback-icon">{tone === 'success' ? <BadgeCheck size={22} /> : <CircleAlert size={22} />}</span><h2 id="feedback-title">{title}</h2><p>{message}</p><button className="admin-primary-button feedback-close" type="button" onClick={onClose}>Understood</button></section></div>
 }
 
 export function ConfirmDialog({ title, message, confirmLabel, loading, onClose, onConfirm }) {

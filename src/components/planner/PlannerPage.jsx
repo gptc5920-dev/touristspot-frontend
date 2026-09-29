@@ -51,8 +51,7 @@ export default function PlannerPage({
                 <button type="button" className="section-title planner-accordion-trigger" aria-expanded={plannerOpenSection === 'when'} onClick={() => onToggleSection('when')}><CalendarDays size={17} /><span><strong>When and where</strong><small>{form.starting_location || 'Set your date and starting point'}</small></span><ChevronDown size={17} /></button>
                 {plannerOpenSection === 'when' && <div className="planner-accordion-panel">
                 <div className="form-grid two-columns">
-                  <label>Date<input type="date" value={form.travel_date} onChange={(event) => onUpdateForm('travel_date', event.target.value)} /></label>
-                  <label>Days<select value={form.travel_days} onChange={(event) => onUpdateForm('travel_days', event.target.value)}><option value="1">1 day</option><option value="2">2 days</option><option value="3">3 days</option></select></label>
+                  <label>Date<input type="date" min={new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)} value={form.travel_date} aria-invalid={Boolean(fieldErrors.travel_date)} onChange={(event) => onUpdateForm('travel_date', event.target.value)} /></label>
                 </div>
                 <label className="wide-label"><span>Starting point</span><span className="input-with-icon"><MapPin size={17} /><input value={form.starting_location} onChange={(event) => { onUpdateForm('starting_location', event.target.value); onPlannerCoordinatesChange({ latitude: '', longitude: '' }) }} placeholder="Enter starting location" /></span></label>
                 <div className="planner-location-actions"><button type="button" onClick={() => onOpenMap()}><MapPinned size={16} /> Choose starting point on map</button>{plannerCoordinates.latitude && <span><BadgeCheck size={14} /> Map pin selected</span>}</div>

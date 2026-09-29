@@ -42,7 +42,7 @@ export const GOOGLE_MAP_URL = 'https://www.google.com/maps/place/Sergio+Osmena+S
 export const GOOGLE_MAP_EMBED_URL = 'https://www.google.com/maps?q=8.3000946,123.5059025&z=12&output=embed'
 
 export const INITIAL_PLANNER_FORM = {
-  travel_date: new Date().toISOString().slice(0, 10),
+  travel_date: new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10),
   starting_location: '',
   start_time: '08:00',
   end_time: '17:00',

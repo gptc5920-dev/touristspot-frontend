@@ -2,7 +2,13 @@ import { useEffect } from 'react'
 import { BadgeCheck, CircleAlert, RefreshCw, Trash2, TriangleAlert, X } from '../../fontawesome-icons'
 
 export function AppModal({ title, message, tone, onClose }) {
-  return <div className="modal-backdrop" role="presentation"><section className={`feedback-dialog ${tone || 'error'}`} role="dialog" aria-modal="true" aria-labelledby="feedback-title"><button className="dialog-close" type="button" title="Close message" onClick={onClose}><X size={18} /></button><span className="feedback-icon">{tone === 'success' ? <BadgeCheck size={22} /> : <CircleAlert size={22} />}</span><h2 id="feedback-title">{title}</h2><p>{message}</p><button className="admin-primary-button feedback-close" type="button" onClick={onClose}>Understood</button></section></div>
+  useEffect(() => {
+    const closeOnEscape = (event) => { if (event.key === 'Escape') onClose() }
+    window.addEventListener('keydown', closeOnEscape)
+    return () => window.removeEventListener('keydown', closeOnEscape)
+  }, [onClose])
+
+  return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}><section className={`feedback-dialog ${tone || 'error'}`} role="dialog" aria-modal="true" aria-labelledby="feedback-title" aria-describedby="feedback-message"><button className="dialog-close" type="button" title="Close message" onClick={onClose}><X size={18} /></button><span className="feedback-icon">{tone === 'success' ? <BadgeCheck size={22} /> : <CircleAlert size={22} />}</span><h2 id="feedback-title">{title}</h2><p id="feedback-message">{message}</p><button className="admin-primary-button feedback-close" type="button" onClick={onClose} autoFocus>Understood</button></section></div>
 }
 
 export function ConfirmDialog({ title, message, confirmLabel, loading, onClose, onConfirm }) {

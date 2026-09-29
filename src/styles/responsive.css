@@ -15,6 +15,11 @@
 img,
 iframe { max-width: 100%; }
 
+.planner-layout input[aria-invalid="true"] { border-color: #b34132; box-shadow: 0 0 0 2px #b3413222; }
+.planner-layout :is(button, input, select):focus-visible,
+.feedback-dialog button:focus-visible { outline: 3px solid #087f7b; outline-offset: 2px; }
+.planner-layout .form-grid.two-columns:has(> label:only-child) { grid-template-columns: 1fr; }
+
 h1,
 h2,
 h3,

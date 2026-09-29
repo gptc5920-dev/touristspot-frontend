@@ -53,6 +53,7 @@ export default function usePlanner({
 
   function startPlanning(destinationId = null) {
     if (destinationId) {
+      setItinerary(null)
       setForm((current) => ({
         ...current,
         preferred_destinations: [destinationId, ...current.preferred_destinations.filter((id) => id !== destinationId)],
@@ -66,11 +67,22 @@ export default function usePlanner({
   }
 
   function updateForm(field, value) {
-    setFieldErrors((current) => ({ ...current, [field]: undefined }))
+    setFieldErrors((current) => {
+      const next = { ...current }
+      delete next[field]
+      return next
+    })
     setForm((current) => ({ ...current, [field]: value }))
+    setItinerary(null)
   }
 
   function toggleInterest(value) {
+    setFieldErrors((current) => {
+      const next = { ...current }
+      delete next.interests
+      return next
+    })
+    setItinerary(null)
     setForm((current) => ({
       ...current,
       interests: current.interests.includes(value)
@@ -80,6 +92,7 @@ export default function usePlanner({
   }
 
   function toggleDestination(id) {
+    setItinerary(null)
     setForm((current) => ({
       ...current,
       preferred_destinations: current.preferred_destinations.includes(id)
@@ -90,18 +103,25 @@ export default function usePlanner({
   }
 
   function validate(preferences) {
-    if (!destinations.length) return 'No verified destinations are available yet. A tourism administrator must add and verify destination records first.'
-    if (!preferences.travel_date || !preferences.starting_location.trim()) return 'Enter both a travel date and starting location before generating an itinerary.'
-    if (!preferences.start_time || !preferences.end_time) return 'Select a preferred start and return time.'
-    if (!preferences.interests.length) return 'Select at least one travel interest so recommendations can be ranked.'
-    if (preferences.budget && Number(preferences.budget) < 0) return 'Your estimated budget cannot be a negative amount.'
-    return ''
+    const errors = {}
+    const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)
+    if (!destinations.length) errors.destinations = ['No verified destinations are available yet.']
+    if (!preferences.travel_date || preferences.travel_date < today) errors.travel_date = ['Choose today or a future date.']
+    if (!preferences.starting_location?.trim()) errors.starting_location = ['Enter a starting location.']
+    if (!preferences.start_time) errors.start_time = ['Choose a start time.']
+    if (!preferences.end_time || preferences.end_time <= preferences.start_time) errors.end_time = ['Return time must be later than the start time.']
+    if (!preferences.interests?.length) errors.interests = ['Select at least one travel interest.']
+    if (!Number.isInteger(Number(preferences.travelers)) || Number(preferences.travelers) < 1 || Number(preferences.travelers) > 30) errors.travelers = ['Enter 1 to 30 travelers.']
+    if (preferences.budget !== '' && (!Number.isFinite(Number(preferences.budget)) || Number(preferences.budget) < 0 || Number(preferences.budget) > 99999999.99)) errors.budget = ['Enter a valid budget from 0 to 99,999,999.99.']
+    return errors
   }
 
   async function createItinerary(preferences = form) {
-    const validationError = validate(preferences)
-    if (validationError) {
-      onModal({ title: 'Review your trip details', message: validationError, tone: 'warning' })
+    const validationErrors = validate(preferences)
+    if (Object.keys(validationErrors).length) {
+      setFieldErrors(validationErrors)
+      setOpenSection(['travel_date', 'starting_location', 'start_time', 'end_time'].some((field) => validationErrors[field]) ? 'when' : validationErrors.interests ? 'interests' : 'style')
+      onModal({ title: 'Review your trip details', message: Object.values(validationErrors).map((messages) => messages[0]).join(' '), tone: 'warning' })
       return
     }
     setGenerating(true)
@@ -116,6 +136,8 @@ export default function usePlanner({
       const body = await readApiJson(response)
       if (!response.ok) {
         setFieldErrors(body.errors || {})
+        if (Object.keys(body.errors || {}).some((field) => ['travel_date', 'starting_location', 'start_time', 'end_time'].includes(field))) setOpenSection('when')
+        else if (body.errors?.interests) setOpenSection('interests')
         throw new Error(body.message || body.error || 'The system could not generate your itinerary.')
       }
       setItinerary(body.itinerary)
@@ -134,6 +156,7 @@ export default function usePlanner({
   }
 
   function removeStop(id) {
+    setItinerary(null)
     const nextForm = {
       ...form,
       preferred_destinations: form.preferred_destinations.filter((item) => item !== id),
@@ -144,6 +167,7 @@ export default function usePlanner({
   }
 
   function addAlternative(id) {
+    setItinerary(null)
     const nextForm = {
       ...form,
       preferred_destinations: [id, ...form.preferred_destinations.filter((item) => item !== id)],
@@ -157,6 +181,7 @@ export default function usePlanner({
     const route = itinerary?.map?.map((stop) => stop.id) || []
     const index = route.indexOf(id)
     if (index < 1) return
+    setItinerary(null)
     const reordered = [...route]
     ;[reordered[index - 1], reordered[index]] = [reordered[index], reordered[index - 1]]
     const nextForm = { ...form, preferred_destinations: reordered }
@@ -180,7 +205,7 @@ export default function usePlanner({
         }
         throw new Error(apiErrorMessage(body, 'Could not save itinerary.'))
       }
-      onNotice('Itinerary saved to the local travel desk.')
+      onNotice(body.message || 'Itinerary saved.')
     } catch (requestError) {
       const message = requestErrorMessage(requestError, 'Could not save itinerary.')
       onError(message)
@@ -211,6 +236,7 @@ export default function usePlanner({
   }
 
   function applyProfilePreferences(profile) {
+    setItinerary(null)
     setForm((current) => ({
       ...current,
       starting_location: profile.home_location || current.starting_location,
@@ -227,6 +253,7 @@ export default function usePlanner({
   }
 
   function addRecommendationToPlanner(preferences, destinationId) {
+    setItinerary(null)
     setForm((current) => ({
       ...current,
       starting_location: preferences.starting_location || current.starting_location,

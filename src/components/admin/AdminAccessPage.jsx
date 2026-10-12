@@ -1,4 +1,4 @@
-import { LogIn, LogOut, Navigation, RefreshCw, ShieldCheck } from '../../fontawesome-icons'
+import { LogIn, LogOut, Navigation, RefreshCw, ShieldCheck } from 'lucide-react'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 
 export default function AdminAccessPage({ checking, user, onLogin, onLogout }) {

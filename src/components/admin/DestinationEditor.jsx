@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight, CalendarRange, Check, ChevronDown, CircleAlert, ImagePlus, Info,
   Link2, MapPin, MapPinned, RefreshCw, Save, ShieldCheck, Sparkles, Trash2, Upload,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import {
   ACCESSIBILITY_SUGGESTIONS, CATEGORY_ACTIVITY_SUGGESTIONS, COMPANION_SUGGESTIONS,
   DESTINATION_CATEGORIES, INTERESTS, OPERATING_DAYS, SAFETY_SUGGESTIONS,

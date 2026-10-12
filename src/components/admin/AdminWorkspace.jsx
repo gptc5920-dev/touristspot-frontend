@@ -4,7 +4,7 @@ import {
   CalendarDays, CircleAlert, Database, LayoutDashboard,
   ListChecks, LogOut, MapPin, MapPinned, Menu, Navigation, PanelLeftClose,
   PanelLeftOpen, Plus, RefreshCw, Settings2, Users, X,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { readApiJson, resolveMediaUrl } from '../../api'
 import { DESTINATION_CATEGORIES, EMPTY_DESTINATION } from '../../config/travel'
 import { apiErrorMessage, peso, requestErrorMessage } from '../../lib/app'

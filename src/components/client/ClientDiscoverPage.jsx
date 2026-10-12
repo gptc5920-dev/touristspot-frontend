@@ -1,10 +1,11 @@
+import Tooltip from '../common/Tooltip'
 import PageHeading from '../common/PageHeading'
 import DestinationImage from '../common/DestinationImage'
 import DestinationDetailsDialog from '../recommendations/DestinationDetailsDialog'
 import useDiscoverFilters from '../../hooks/useDiscoverFilters'
 import { peso } from '../../lib/app'
 import { useEffect, useMemo, useState } from 'react'
-import { Bookmark, MapPin, MapPinned, Plus, Search, SlidersHorizontal, Star, X } from '../../fontawesome-icons'
+import { Bookmark, MapPin, MapPinned, Plus, Search, SlidersHorizontal, Star, X } from 'lucide-react'
 import { GOOGLE_MAP_URL } from '../../config/travel'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 
@@ -120,7 +121,7 @@ export default function ClientDiscoverPage({ destinations, loading, error, onRet
               const label = CATEGORY_LABELS[destination.category] || destination.category
               return <article className="discover-card" key={destination.id}>
                 <div className="discover-card-image"><DestinationImage destination={destination} />
-                  <button type="button" className={`discover-bookmark ${saved ? 'saved' : ''}`} aria-pressed={saved} aria-label={`${saved ? 'Remove' : 'Save'} ${destination.name}${saved ? ' from saved places' : ' to saved places'}`} onClick={() => toggleSaved(destination.id)}><Bookmark size={15} /></button>
+                  <Tooltip label={saved ? 'Remove from saved places' : 'Save place'}><button type="button" className={`discover-bookmark ${saved ? 'saved' : ''}`} aria-pressed={saved} aria-label={`${saved ? 'Remove' : 'Save'} ${destination.name}${saved ? ' from saved places' : ' to saved places'}`} onClick={() => toggleSaved(destination.id)}><Bookmark size={18} fill={saved ? 'currentColor' : 'none'} /></button></Tooltip>
                 </div>
                 <div className="discover-card-body"><span className="discover-category-tag">{label}</span><h3><button type="button" className="discover-details-trigger" onClick={() => setDetails(destination)}>{destination.name}</button></h3><button type="button" className="discover-rating" onClick={() => onFeedback(destination)} aria-label={`Read reviews for ${destination.name}`}><Star size={14} fill={destination.average_rating ? 'currentColor' : 'none'} /><strong>{destination.average_rating ?? 'New'}</strong><span>· {destination.review_count || 0} review{destination.review_count === 1 ? '' : 's'}</span></button><p className="discover-location"><MapPin size={14} /> {destination.area || destination.address || 'Location not listed'}</p><dl className="discover-facts"><div><dt>Entrance</dt><dd>{destination.entrance_fee == null ? 'Not listed' : Number(destination.entrance_fee) === 0 ? 'Free' : peso.format(Number(destination.entrance_fee))}</dd></div><div><dt>Visit</dt><dd>{destination.visit_minutes ? `${destination.visit_minutes} min` : 'Not listed'}</dd></div></dl><footer className="discover-card-actions"><a className="discover-card-map" href={mapUrl(destination)} target="_blank" rel="noopener noreferrer"><MapPin size={12} /> Map</a><button type="button" className="discover-add" onClick={() => onPlan(destination.id)}><Plus size={16} /> Add to itinerary</button></footer></div>
               </article>

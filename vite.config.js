@@ -8,17 +8,6 @@ export default defineConfig(({ mode }) => ({
   // root base for development preserves Vite's local server behaviour.
   base: mode === 'django' ? '/static/' : '/',
   plugins: [react(), tailwindcss()],
-  build: {
-    rollupOptions: {
-      output: {
-        manualChunks(id) {
-          if (id.includes('node_modules/@fortawesome/')) {
-            return 'fontawesome'
-          }
-        },
-      },
-    },
-  },
   server: {
     strictPort: true,
     proxy: {

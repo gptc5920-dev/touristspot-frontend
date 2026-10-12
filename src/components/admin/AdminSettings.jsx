@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   BadgeCheck, Building2, CircleAlert, ImagePlus, Mail, MapPinned,
   Navigation, Phone, RefreshCw, RotateCcw, Save, Trash2, Upload,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { readApiJson } from '../../api'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 import { apiErrorMessage, requestErrorMessage } from '../../lib/app'

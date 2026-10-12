@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react'
 import {
   BadgeCheck, Check, CircleAlert, Clock3, Compass, Languages, LocateFixed,
   MapPin, MapPinned, RefreshCw, Route, ShieldCheck, Sparkles, WalletCards,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { DESTINATION_CATEGORIES, INTERESTS } from '../../config/travel'
 import { PACE_OPTIONS, TRANSPORTATION_OPTIONS, TRAVELER_OPTIONS } from '../../config/preferences'
 import LocationMapModal from '../common/LocationMapModal'

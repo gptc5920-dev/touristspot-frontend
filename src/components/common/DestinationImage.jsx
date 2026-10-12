@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { MapPinned } from '../../fontawesome-icons'
+import { MapPinned } from 'lucide-react'
 
 export default function DestinationImage({ destination, className = '' }) {
   const [failedUrl, setFailedUrl] = useState(null)

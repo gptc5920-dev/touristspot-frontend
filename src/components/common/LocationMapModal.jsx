@@ -1,6 +1,6 @@
 import DialogSurface from './DialogSurface'
 import { useRef, useState } from 'react'
-import { Check, CircleAlert, LocateFixed, MapPin, MapPinned, RefreshCw, Search, X } from '../../fontawesome-icons'
+import { Check, CircleAlert, LocateFixed, MapPin, MapPinned, RefreshCw, Search, X } from 'lucide-react'
 import SelectableMap from './SelectableMap'
 
 export default function LocationMapModal({ draft, onApply, onClose, eyebrow = 'Destination location', title = 'Choose location on map', description = 'Search the address, confirm the coordinates, then apply them to the destination.', applyLabel = 'Apply location' }) {

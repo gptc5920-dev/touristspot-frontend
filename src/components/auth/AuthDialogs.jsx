@@ -1,6 +1,6 @@
 import DialogSurface from '../common/DialogSurface'
 import { useState } from 'react'
-import { CircleAlert, Eye, EyeOff, LogIn, RefreshCw, ShieldCheck, UserPlus, X } from '../../fontawesome-icons'
+import { CircleAlert, Eye, EyeOff, LogIn, RefreshCw, ShieldCheck, UserPlus, X } from 'lucide-react'
 
 export function AdminLoginDialog({ credentials, setCredentials, error, onClose, onSubmit, loading }) {
   const [showPassword, setShowPassword] = useState(false)

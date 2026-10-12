@@ -2,7 +2,7 @@ import { useMemo, useState } from 'react'
 import {
   Database, MapPin, PencilLine, Plus, RefreshCw, Search, ShieldCheck, Star,
   Trash2, UserRound, Users,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { peso } from '../../lib/app'
 
 export function UsersTable({ users: userRecords, loading }) {

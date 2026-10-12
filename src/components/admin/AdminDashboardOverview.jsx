@@ -1,7 +1,7 @@
 import {
   ArrowRight, BadgeCheck, BarChart3, ClipboardCheck, Database, FileClock,
   ListChecks, RefreshCw, TriangleAlert,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { peso } from '../../lib/app'
 
 export default function AdminDashboardOverview({ dashboard, loading, onManage, onEdit }) {

@@ -1,7 +1,7 @@
 import {
   ArrowRight, BadgeCheck, Eye, MapPin, Navigation, Plus,
   ShieldCheck, Sparkles, Star,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { peso } from '../../lib/app'
 
 export default function RecommendationCard({ recommendation, onDetails, onAdd }) {

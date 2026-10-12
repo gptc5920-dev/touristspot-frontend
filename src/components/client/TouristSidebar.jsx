@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { Compass, LogOut, MapPin, Menu, Navigation, Route, Share2, Sparkles, UserRound, X } from '../../fontawesome-icons'
+import { Compass, LogOut, MapPin, Menu, Navigation, Route, Share2, Sparkles, UserRound, X } from 'lucide-react'
 import { ROUTES } from '../../config/travel'
 import DialogSurface from '../common/DialogSurface'
 

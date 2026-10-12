@@ -145,3 +145,10 @@ button, a { touch-action: manipulation; }
 .admin-shell .page-heading p { color: var(--ui-muted); font-size: 14px; }
 .admin-shell .eyebrow { color: var(--ui-accent); }
 .admin-shell .admin-avatar { background: var(--ui-accent); }
+
+/* Lucide icons keep their stroke and size in dense flex layouts. */
+.lucide { flex-shrink: 0; vertical-align: middle; }
+/* Radix portals render outside the app shell; use shared root tokens. */
+.ui-tooltip { z-index: 100; max-width: min(260px, calc(100vw - 24px)); padding: 8px 12px; border-radius: 8px; color: #fff; background: var(--ui-ink); box-shadow: var(--ui-shadow); font-family: var(--font-sans); font-size: 12px; font-weight: 500; line-height: 1.5; overflow-wrap: anywhere; }
+.ui-tooltip-arrow { fill: var(--ui-ink); }
+@media print { .ui-tooltip { display: none; } }

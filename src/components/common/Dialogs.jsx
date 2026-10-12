@@ -1,5 +1,5 @@
 import DialogSurface from './DialogSurface'
-import { BadgeCheck, CircleAlert, RefreshCw, Trash2, TriangleAlert, X } from '../../fontawesome-icons'
+import { BadgeCheck, CircleAlert, RefreshCw, Trash2, TriangleAlert, X } from 'lucide-react'
 
 export function AppModal({ title, message, tone, onClose }) {
   return <div className="modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}><DialogSurface onClose={onClose} className={`feedback-dialog ${tone || 'error'}`} role="dialog" aria-modal="true" aria-labelledby="feedback-title" aria-describedby="feedback-message"><button className="dialog-close" type="button" title="Close message" onClick={onClose}><X size={18} /></button><span className="feedback-icon">{tone === 'success' ? <BadgeCheck size={22} /> : <CircleAlert size={22} />}</span><h2 id="feedback-title">{title}</h2><p id="feedback-message">{message}</p><button className="admin-primary-button feedback-close" type="button" onClick={onClose} autoFocus>Understood</button></DialogSurface></div>

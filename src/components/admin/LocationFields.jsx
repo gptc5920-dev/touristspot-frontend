@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { MapPin, RefreshCw } from '../../fontawesome-icons'
+import { MapPin, RefreshCw } from 'lucide-react'
 import { readApiJson } from '../../api'
 
 export default function LocationFields({ apiFetch, draft, onChange }) {

@@ -1,6 +1,6 @@
 import { ROUTES } from './config/travel'
 import { lazy, Suspense, useEffect, useState } from 'react'
-import { BadgeCheck, Compass, LayoutDashboard, LogIn, LogOut, MapPin, Navigation, Route, Share2, Sparkles, UserPlus, UserRound } from './fontawesome-icons'
+import { BadgeCheck, Compass, LayoutDashboard, LogIn, LogOut, MapPin, Navigation, Route, Share2, Sparkles, UserPlus, UserRound } from 'lucide-react'
 import AdminAccessPage from './components/admin/AdminAccessPage'
 import { AdminLoginDialog, AuthDialog } from './components/auth/AuthDialogs'
 import { AppModal } from './components/common/Dialogs'

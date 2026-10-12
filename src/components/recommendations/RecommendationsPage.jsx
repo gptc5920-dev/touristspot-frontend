@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import {
   BadgeCheck, CircleAlert, RefreshCw, Settings2, ShieldCheck, SlidersHorizontal,
   Sparkles, WandSparkles,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import DestinationDetailsDialog from './DestinationDetailsDialog'
 import RecommendationCard from './RecommendationCard'
 

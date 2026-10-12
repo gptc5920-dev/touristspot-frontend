@@ -1,6 +1,6 @@
 import DestinationImage from '../common/DestinationImage'
 import DialogSurface from '../common/DialogSurface'
-import { Clock3, MapPin, Navigation, Route, ShieldCheck, X } from '../../fontawesome-icons'
+import { Clock3, MapPin, Navigation, Route, ShieldCheck, X } from 'lucide-react'
 import { peso } from '../../lib/app'
 
 export default function DestinationDetailsDialog({ destination, onClose, onAdd }) {

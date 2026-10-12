@@ -3,7 +3,7 @@ import {
   Download, LocateFixed, MapPin, MapPinned, MessageCircle, Navigation, Plus,
   Printer, RefreshCw, Route, Save, Sparkles, Star, Trash2, Users, Utensils,
   WandSparkles,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { GOOGLE_MAP_EMBED_URL, GOOGLE_MAP_URL, INTERESTS } from '../../config/travel'
 import { formatEstimate, peso } from '../../lib/app'
 

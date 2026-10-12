@@ -19,3 +19,10 @@ Keep API and state behavior in hooks or service modules. Keep page components fo
 - Home and Discover own their layouts in `styles/home.css` and `styles/discover.css`. The former home-reference override layer has been consolidated into home.css.
 - Keep one clear primary action per section, align card actions in a footer, use readable supporting text, and retain visible keyboard focus. Controls should have at least 44px of touch space where practical.
 - Keep responsive layouts usable at 320px, with form text at 16px on mobile. Tourist navigation remains a desktop sidebar and an accessible mobile drawer. Preserve print and reduced-motion behavior when changing styles.
+
+## UI libraries
+
+- **Lucide React** supplies icons via named imports from `lucide-react`, so builds include only icons in use. Use 16–20px icons for controls, retain `aria-label` on icon-only buttons, and use fill only for selected bookmark/rating states.
+- **Fontsource Inter Variable** is bundled locally through `main.jsx` with `font-display: swap`. It supports the shared 100–900 weight scale; no Google Fonts request is needed. Use `--font-sans` for custom CSS.
+- **Radix UI Tooltip** powers `components/common/Tooltip` and its root provider. Wrap one native button/link, keep the control’s accessible name, and reserve tooltips for supplementary labels. Radix handles keyboard focus, Escape dismissal, and viewport positioning.
+- **Tailwind CSS 4** remains the utility and theme foundation. Shared visual tokens live in `index.css` and `styles/design-system.css`.

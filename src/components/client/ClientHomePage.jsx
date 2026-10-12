@@ -1,9 +1,10 @@
+import Tooltip from '../common/Tooltip'
 import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight, BadgeCheck, CalendarDays, Compass, ChevronLeft, ChevronRight, MapPin, MapPinned,
   MessageCircle, Navigation, Pause, Play, Plus, Route, SlidersHorizontal, Sparkles,
   Star, WandSparkles,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { peso } from '../../lib/app'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 import landingWaterfall from '../../assets/landing-waterfall.webp'
@@ -78,9 +79,9 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
         <div className="home-visual-shade" />
         <button type="button" className="home-featured-card" onClick={onDiscover}>Explore local places <ArrowRight size={18} /></button>
         {topDestinations.length > 1 && <div className="home-carousel-controls">
-          <button type="button" onClick={() => moveCarousel(-1)} aria-label="Show previous top destination"><ChevronLeft size={17} /></button>
+          <Tooltip label="Previous destination" side="bottom"><button type="button" onClick={() => moveCarousel(-1)} aria-label="Show previous top destination"><ChevronLeft size={17} /></button></Tooltip>
           <button type="button" disabled={reducedMotion} onClick={() => setCarouselPaused((current) => !current)} aria-label={reducedMotion ? 'Automatic rotation disabled by reduced motion preference' : carouselPaused ? 'Play destination carousel' : 'Pause destination carousel'}>{carouselPaused || reducedMotion ? <Play size={15} /> : <Pause size={15} />}</button>
-          <button type="button" onClick={() => moveCarousel(1)} aria-label="Show next top destination"><ChevronRight size={17} /></button>
+          <Tooltip label="Next destination" side="bottom"><button type="button" onClick={() => moveCarousel(1)} aria-label="Show next top destination"><ChevronRight size={17} /></button></Tooltip>
           <div className="home-carousel-dots" role="group" aria-label="Choose a top destination">{topDestinations.map((destination, index) => <button key={destination.id} type="button" className={activeSlide === index ? 'active' : ''} aria-current={activeSlide === index ? 'true' : undefined} aria-label={`Show ${destination.name}`} onClick={() => { setActiveSlide(index); setCarouselPaused(true) }} />)}</div>
         </div>}
       </div>

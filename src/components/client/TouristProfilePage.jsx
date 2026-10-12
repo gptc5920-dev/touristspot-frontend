@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react'
 import {
   BadgeCheck, CalendarDays, Check, CircleAlert, LogIn, RefreshCw, Save,
   ShieldCheck, SlidersHorizontal, Sparkles, UserPlus, UserRound,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { readApiJson } from '../../api'
 import { INTERESTS } from '../../config/travel'
 import { apiErrorMessage, authUserFromPayload, requestErrorMessage } from '../../lib/app'

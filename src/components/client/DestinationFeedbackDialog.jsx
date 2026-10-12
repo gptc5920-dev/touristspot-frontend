@@ -2,7 +2,7 @@ import DialogSurface from '../common/DialogSurface'
 import { useEffect, useState } from 'react'
 import {
   BadgeCheck, CircleAlert, LogIn, MessageCircle, RefreshCw, Send, Star, UserRound, X,
-} from '../../fontawesome-icons'
+} from 'lucide-react'
 import { readApiJson } from '../../api'
 import { apiErrorMessage, requestErrorMessage } from '../../lib/app'
 

@@ -6,12 +6,12 @@
 @import './accounts.css';
 @import './tables.css';
 @import './planner-enhancements.css';
-@import './home.css';
 @import './responsive.css';
-@import './home-reference.css';
+@import './home.css';
 @import './discover.css';
 @import './print.css';
 @import './selectable-map.css';
 
 @import './usability.css';
 @import './tourist-sidebar.css';
+@import './design-system.css';

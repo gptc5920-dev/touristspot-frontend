@@ -10,7 +10,7 @@
 .tourist-sidebar-nav a { display: flex; align-items: center; gap: 12px; min-height: 48px; padding: 12px; border-radius: 9px; color: #526b68; font-size: 14px; font-weight: 650; text-decoration: none; }
 .tourist-sidebar-nav a svg { flex: 0 0 19px; }
 .tourist-sidebar-nav a:hover { background: #f1f7f4; color: #087f7b; }
-.tourist-sidebar-nav a.active { color: #087f7b; background: #e9f6f1; font-weight: 800; }
+.tourist-sidebar-nav a.active { color: var(--ui-accent); background: var(--ui-accent-soft); font-weight: 650; box-shadow: inset 3px 0 var(--ui-accent); }
 .tourist-sidebar-footer { display: grid; gap: 8px; margin-top: auto; padding-top: 28px; }
 .tourist-sidebar-account { display: flex; align-items: center; gap: 10px; min-width: 0; padding: 16px 8px; border-top: 1px solid #e3ece8; color: #173b3e; text-decoration: none; }
 .tourist-avatar { display: grid; flex: 0 0 38px; height: 38px; place-items: center; border-radius: 50%; background: #e9f6f1; color: #087f7b; }
@@ -33,7 +33,6 @@
 @media (min-width: 861px) and (max-width: 1180px) {
   .tourist-shell .home-hero { grid-template-columns: 1fr; }
   .tourist-shell .home-visual-stage { width: min(560px, 100%); margin-inline: auto; }
-  .tourist-shell .home-destination-grid { grid-template-columns: 1fr; }
   .tourist-shell .planner-layout { display: block; }
   .tourist-shell .preference-panel { position: static; height: auto; max-height: none; overflow: visible; border-right: 0; border-bottom: 1px solid #dce5e1; }
 }

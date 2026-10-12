@@ -1,3 +1,4 @@
+import PageHeading from '../common/PageHeading'
 import DestinationImage from '../common/DestinationImage'
 import DestinationDetailsDialog from '../recommendations/DestinationDetailsDialog'
 import useDiscoverFilters from '../../hooks/useDiscoverFilters'
@@ -8,19 +9,19 @@ import { GOOGLE_MAP_URL } from '../../config/travel'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 
 const SAVED_KEY = 'travel-osmena-discover-saved'
-const CATEGORY_DETAILS = {
-  'Nature & eco-tourism': ['🌿', 'Eco-Tourism'],
-  'Beach & coastal': ['🏖️', 'Beaches'],
-  'Waterfall & river': ['🌊', 'Waterfalls'],
-  'Mountain & viewpoint': ['⛰️', 'Highlands & Viewpoints'],
-  'Historical site': ['🏛️', 'Historical Sites'],
-  'Cultural heritage': ['🎭', 'Cultural Heritage'],
-  'Religious site': ['⛪', 'Faith & Heritage'],
-  'Food & dining': ['☕', 'Food & Coffee'],
-  'Adventure & recreation': ['🥾', 'Adventure'],
-  'Park & family attraction': ['🌳', 'Parks & Family'],
-  'Shopping & local products': ['🛍️', 'Local Finds'],
-  Accommodation: ['⛺', 'Stays & Camps'],
+const CATEGORY_LABELS = {
+  'Nature & eco-tourism': 'Eco-Tourism',
+  'Beach & coastal': 'Beaches',
+  'Waterfall & river': 'Waterfalls',
+  'Mountain & viewpoint': 'Highlands & Viewpoints',
+  'Historical site': 'Historical Sites',
+  'Cultural heritage': 'Cultural Heritage',
+  'Religious site': 'Faith & Heritage',
+  'Food & dining': 'Food & Coffee',
+  'Adventure & recreation': 'Adventure',
+  'Park & family attraction': 'Parks & Family',
+  'Shopping & local products': 'Local Finds',
+  Accommodation: 'Stays & Camps',
 }
 
 function readSavedIds() {
@@ -85,14 +86,14 @@ export default function ClientDiscoverPage({ destinations, loading, error, onRet
 
   return <main className="discover-page">
     <div className="discover-container">
-      <header className="discover-heading"><h1>Discover your next escape.</h1><p>Browse curated local experiences and hidden gems in {settings.municipality_name}.</p></header>
+      <PageHeading className="discover-heading" eyebrow="Explore locally" title="Discover your next escape." description={`Find your kind of adventure in ${settings.municipality_name}.`} actions={<a className="ui-button ui-button-secondary" href={GOOGLE_MAP_URL} target="_blank" rel="noopener noreferrer"><MapPinned size={17} /> Explore the map</a>} />
       <div className="discover-toolbar">
         <form className="discover-search" role="search" onSubmit={(event) => { event.preventDefault(); setSearchTerm(query.trim()) }}>
           <label className="sr-only" htmlFor="discover-query">Search destinations</label>
-          <input id="discover-query" type="search" value={query} onChange={(event) => { setQuery(event.target.value); if (!event.target.value) setSearchTerm('') }} placeholder="Search destinations, trails, farms, campsites..." />
+          <input id="discover-query" type="search" value={query} onChange={(event) => { setQuery(event.target.value); if (!event.target.value) setSearchTerm('') }} placeholder="Search places, activities, or areas" />
           <button type="submit" aria-label="Search destinations"><Search size={17} /></button>
         </form>
-        <button type="button" className={`discover-filter-trigger ${filtersOpen ? 'active' : ''}`} aria-expanded={filtersOpen} onClick={() => setFiltersOpen((current) => !current)}><SlidersHorizontal size={15} /> Filter</button>
+        <button type="button" className={`discover-filter-trigger ${filtersOpen ? 'active' : ''}`} aria-expanded={filtersOpen} onClick={() => setFiltersOpen((current) => !current)}><SlidersHorizontal size={15} /> Filters</button>
       </div>
       {filtersOpen && <section className="discover-filters" aria-label="Additional filters">
         <label><input type="checkbox" checked={freeOnly} onChange={(event) => setFreeOnly(event.target.checked)} /> Free entrance</label>
@@ -110,25 +111,23 @@ export default function ClientDiscoverPage({ destinations, loading, error, onRet
       </div>
       <section className="discover-results" aria-labelledby="discover-categories-title">
         {error && !destinations.length && !loading && <div className="discover-load-error" role="alert"><p>Unable to load destinations. Please try again.</p><button type="button" onClick={onRetry}>Retry</button></div>}
-        <div className="discover-category-row"><h2 id="discover-categories-title">Explore by Category</h2><div className="discover-category-list"><button type="button" className={!category ? 'selected' : ''} aria-pressed={!category} onClick={() => setCategory('')}>All places</button>{categories.map((item) => { const [emoji, label] = CATEGORY_DETAILS[item] || ['📍', item]; return <button type="button" key={item} className={category === item ? 'selected' : ''} aria-pressed={category === item} onClick={() => setCategory(category === item ? '' : item)}><span aria-hidden="true">{emoji}</span> {label}</button> })}</div></div>
+        <div className="discover-category-row"><h2 id="discover-categories-title">Find your kind of place</h2><div className="discover-category-list"><button type="button" className={!category ? 'selected' : ''} aria-pressed={!category} onClick={() => setCategory('')}>All places</button>{categories.map((item) => { const label = CATEGORY_LABELS[item] || item; return <button type="button" key={item} className={category === item ? 'selected' : ''} aria-pressed={category === item} onClick={() => setCategory(category === item ? '' : item)}>{label}</button> })}</div></div>
         <p className="discover-result-count" aria-live="polite">{loading ? 'Loading verified destinations…' : error && !destinations.length ? 'Destinations unavailable' : `${visibleDestinations.length} destination${visibleDestinations.length === 1 ? '' : 's'} to explore`}</p>
         <div className="discover-grid">
-          {loading ? [1, 2, 3, 4, 5].map((item) => <div key={item} className="discover-card-skeleton" />)
+          {loading ? [1, 2, 3, 4, 5, 6].map((item) => <div key={item} className="discover-card-skeleton" />)
             : error && !destinations.length ? null : visibleDestinations.length ? visibleDestinations.map((destination) => {
               const saved = savedIds.includes(String(destination.id))
-              const [emoji, label] = CATEGORY_DETAILS[destination.category] || ['📍', destination.category]
+              const label = CATEGORY_LABELS[destination.category] || destination.category
               return <article className="discover-card" key={destination.id}>
                 <div className="discover-card-image"><DestinationImage destination={destination} />
                   <button type="button" className={`discover-bookmark ${saved ? 'saved' : ''}`} aria-pressed={saved} aria-label={`${saved ? 'Remove' : 'Save'} ${destination.name}${saved ? ' from saved places' : ' to saved places'}`} onClick={() => toggleSaved(destination.id)}><Bookmark size={15} /></button>
-                  <button type="button" className="discover-add" onClick={() => onPlan(destination.id)}><Plus size={12} /> Add to itinerary</button>
                 </div>
-                <div className="discover-card-body"><h3><button type="button" className="discover-details-trigger" onClick={() => setDetails(destination)}>{destination.name}</button></h3><button type="button" className="discover-rating" onClick={() => onFeedback(destination)} aria-label={`Read reviews for ${destination.name}`}><Star size={14} fill={destination.average_rating ? 'currentColor' : 'none'} /><strong>{destination.average_rating ?? 'New'}</strong><span>· {destination.review_count || 0} review{destination.review_count === 1 ? '' : 's'}</span></button><p className="discover-location"><MapPin size={14} /> {destination.area || destination.address || 'Location not listed'}</p><dl className="discover-facts"><div><dt>Entrance</dt><dd>{destination.entrance_fee == null ? 'Not listed' : Number(destination.entrance_fee) === 0 ? 'Free' : peso.format(Number(destination.entrance_fee))}</dd></div><div><dt>Visit</dt><dd>{destination.visit_minutes ? `${destination.visit_minutes} min` : 'Not listed'}</dd></div></dl><span className="discover-category-tag"><span aria-hidden="true">{emoji}</span> {label}</span><a className="discover-card-map" href={mapUrl(destination)} target="_blank" rel="noopener noreferrer"><MapPin size={12} /> View map</a></div>
+                <div className="discover-card-body"><span className="discover-category-tag">{label}</span><h3><button type="button" className="discover-details-trigger" onClick={() => setDetails(destination)}>{destination.name}</button></h3><button type="button" className="discover-rating" onClick={() => onFeedback(destination)} aria-label={`Read reviews for ${destination.name}`}><Star size={14} fill={destination.average_rating ? 'currentColor' : 'none'} /><strong>{destination.average_rating ?? 'New'}</strong><span>· {destination.review_count || 0} review{destination.review_count === 1 ? '' : 's'}</span></button><p className="discover-location"><MapPin size={14} /> {destination.area || destination.address || 'Location not listed'}</p><dl className="discover-facts"><div><dt>Entrance</dt><dd>{destination.entrance_fee == null ? 'Not listed' : Number(destination.entrance_fee) === 0 ? 'Free' : peso.format(Number(destination.entrance_fee))}</dd></div><div><dt>Visit</dt><dd>{destination.visit_minutes ? `${destination.visit_minutes} min` : 'Not listed'}</dd></div></dl><footer className="discover-card-actions"><a className="discover-card-map" href={mapUrl(destination)} target="_blank" rel="noopener noreferrer"><MapPin size={12} /> Map</a><button type="button" className="discover-add" onClick={() => onPlan(destination.id)}><Plus size={16} /> Add to itinerary</button></footer></div>
               </article>
             }) : <div className="discover-empty"><Search size={26} /><h3>{destinations.length ? 'No matching destinations' : 'No destinations available yet'}</h3><p>{destinations.length ? 'Try another search or clear the filters to explore all verified places.' : 'Verified places will appear here when the tourism team publishes them.'}</p>{destinations.length > 0 && <button type="button" onClick={clearFilters}>Show all places</button>}</div>}
         </div>
       </section>
     </div>
-    <a className="discover-floating-map" href={GOOGLE_MAP_URL} target="_blank" rel="noopener noreferrer"><MapPinned size={17} /> View Map <span aria-hidden="true">🗺️</span></a>
     {details && <DestinationDetailsDialog destination={details} onClose={() => setDetails(null)} onAdd={(destination) => { setDetails(null); onPlan(destination.id) }} />}
     <footer className="discover-footer"><span>{settings.site_name}</span><span>© {new Date().getFullYear()} {settings.municipality_name}. All rights reserved.</span></footer>
   </main>

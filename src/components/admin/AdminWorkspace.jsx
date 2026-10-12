@@ -1,3 +1,4 @@
+import PageHeading from '../common/PageHeading'
 import { useEffect, useState } from 'react'
 import {
   CalendarDays, CircleAlert, Database, LayoutDashboard,
@@ -358,10 +359,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         <header className="admin-topbar"><div className="admin-topbar-leading"><button type="button" className="admin-collapse-menu" aria-label={sidebarCollapsed ? 'Expand admin menu' : 'Collapse admin menu'} aria-expanded={!sidebarCollapsed} onClick={toggleSidebar}>{sidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}</button><button type="button" className="admin-mobile-menu" aria-label="Open admin menu" aria-expanded={mobileSidebarOpen} onClick={() => setMobileSidebarOpen(true)}><Menu size={19} /></button><div className="admin-breadcrumb"><span>Admin workspace</span><strong>{adminSectionCopy[0]}</strong></div></div><div className="admin-topbar-account"><span className="admin-today"><CalendarDays size={15} /> {new Date().toLocaleDateString('en-PH', { weekday: 'short', month: 'short', day: 'numeric' })}</span><span className="admin-avatar">{accountInitial}</span><span className="admin-account-copy"><strong>{accountLabel}</strong><small>Administrator</small></span><button type="button" title="Sign out" onClick={onLogout}><LogOut size={16} /></button></div></header>
 
         <div className="admin-workspace">
-      <div className="admin-page-heading" style={adminSection === 'overview' ? { justifyContent: 'flex-end' } : undefined}>
-        {adminSection !== 'overview' && <div><h1>{adminSectionCopy[0]}</h1><p>{adminSectionCopy[1]}</p></div>}
-        <div className="admin-heading-actions">{adminSection === 'destinations' && <button type="button" className="admin-secondary-button" aria-expanded={recordsDrawerOpen} onClick={() => setRecordsDrawerOpen(true)}><ListChecks size={16} /> Destination records <span>{records.length}</span></button>}{['overview', 'table', 'destinations'].includes(adminSection) && <button type="button" className="admin-primary-button" onClick={startNewDestination}><Plus size={17} /> Add destination</button>}</div>
-      </div>
+      <PageHeading className="admin-page-heading" eyebrow="Tourism workspace" title={adminSectionCopy[0]} description={adminSectionCopy[1]} actions={<div className="admin-heading-actions">{adminSection === 'destinations' && <button type="button" className="admin-secondary-button" aria-expanded={recordsDrawerOpen} onClick={() => setRecordsDrawerOpen(true)}><ListChecks size={16} /> Destination records <span>{records.length}</span></button>}{['overview', 'table', 'destinations'].includes(adminSection) && <button type="button" className="admin-primary-button" onClick={startNewDestination}><Plus size={17} /> Add destination</button>}</div>} />
 
       {error && <div className="alert error"><CircleAlert size={18} /><span>{error}</span><button type="button" title="Dismiss message" onClick={() => setError('')}><X size={16} /></button></div>}
 

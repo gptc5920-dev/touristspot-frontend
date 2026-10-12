@@ -66,18 +66,17 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
   return <main className="client-home">
     <div className="home-hero-shell"><section className="home-hero">
       <div className="home-hero-copy">
-        <span className="home-kicker"><BadgeCheck size={15} /> Verified tourism data</span>
+        <span className="home-kicker"><BadgeCheck size={15} /> A world of local discoveries</span>
         <h1>{settings.tagline}</h1>
-        <p>Build a practical itinerary around curated, verified destinations, personalized to your budget and preferred pace.</p>
-        <div className="home-hero-stats" aria-label="Travel Osmena overview"><div><strong>{destinations.length || '—'}</strong><span>Verified destinations</span></div><div><strong>{categoryCount || '—'}</strong><span>Travel categories</span></div><div><strong>{freeDestinationCount}</strong><span>Free entrances</span></div></div>
+        <p>Find beautiful places, discover local favorites, and build a day that feels like you.</p>
         <div className="home-hero-actions"><button type="button" className="home-primary-action" onClick={() => onPlan()}><WandSparkles size={18} /> Build my itinerary <ArrowRight size={17} /></button><button type="button" className="home-secondary-action" onClick={onDiscover}><Compass size={17} /> Explore destinations</button></div>
+        <div className="home-hero-stats" aria-label={`${settings.site_name} overview`}><div><strong>{destinations.length || '—'}</strong><span>Verified destinations</span></div><div><strong>{categoryCount || '—'}</strong><span>Travel categories</span></div><div><strong>{freeDestinationCount}</strong><span>Free entrances</span></div></div>
       </div>
       <div className="home-visual-stage"><div className="home-hero-visual" role="region" aria-roledescription="carousel" aria-label="Featured destinations" >
         <img className="home-carousel-image" src={landingWaterfall} srcSet={`${landingWaterfallSmall} 640w, ${landingWaterfall} 1280w`} sizes="(max-width: 760px) 100vw, 50vw" alt="" fetchPriority="high" />
         {featured?.image_url && !heroImageFailed && <img key={featured.id} className="home-carousel-image" src={featured.image_url} alt={featured.name} onError={() => setHeroImageFailed(true)} />}
         <div className="home-visual-shade" />
-        <button type="button" className="home-featured-card" onClick={onDiscover}>Explore Verified Destinations <ArrowRight size={16} /></button>
-        <div className="home-ai-badge"><Sparkles size={16} /><span><strong>Trips tailored to your interests</strong><small>Personalized to your trip</small></span></div>
+        <button type="button" className="home-featured-card" onClick={onDiscover}>Explore local places <ArrowRight size={18} /></button>
         {topDestinations.length > 1 && <div className="home-carousel-controls">
           <button type="button" onClick={() => moveCarousel(-1)} aria-label="Show previous top destination"><ChevronLeft size={17} /></button>
           <button type="button" disabled={reducedMotion} onClick={() => setCarouselPaused((current) => !current)} aria-label={reducedMotion ? 'Automatic rotation disabled by reduced motion preference' : carouselPaused ? 'Play destination carousel' : 'Pause destination carousel'}>{carouselPaused || reducedMotion ? <Play size={15} /> : <Pause size={15} />}</button>
@@ -85,10 +84,6 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
           <div className="home-carousel-dots" role="group" aria-label="Choose a top destination">{topDestinations.map((destination, index) => <button key={destination.id} type="button" className={activeSlide === index ? 'active' : ''} aria-current={activeSlide === index ? 'true' : undefined} aria-label={`Show ${destination.name}`} onClick={() => { setActiveSlide(index); setCarouselPaused(true) }} />)}</div>
         </div>}
       </div>
-      {topDestinations.map((destination, index) => <button type="button" key={destination.id} className={`home-floating-destination home-floating-destination-${index + 1}`} onClick={() => onPlan(destination.id)} aria-label={`Plan a visit to ${destination.name}`}>
-        <DestinationThumbnail destination={destination} className="home-floating-placeholder" decorative loading="eager" />
-        <span className="home-floating-copy"><strong>{destination.name}</strong><small><Star size={11} fill="currentColor" /> {destination.average_rating || 'New'}{destination.average_rating ? ' / 5' : ''}</small></span>
-      </button>)}
       </div>
     </section></div>
 
@@ -99,7 +94,7 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
     </section>
 
     <section id="featured-destinations" className="home-section home-destinations">
-      <header className="home-section-heading"><div><span className="home-kicker"><MapPinned size={15} /> Discover locally</span><h2>Places worth adding to your day</h2><p>Explore active, verified destinations before adding them to your personalized itinerary.</p></div><button type="button" className="home-text-action" onClick={() => onPlan()}><span>Open all in planner</span><ArrowRight size={16} /></button></header>
+      <header className="home-section-heading"><div><span className="home-kicker"><MapPinned size={15} /> Discover locally</span><h2>Your next stop starts here</h2><p>Handpicked local experiences, ready to make part of your day.</p></div><button type="button" className="home-text-action" onClick={onDiscover}><span>Explore all places</span><ArrowRight size={16} /></button></header>
       <div className="home-destination-grid">
         {loading ? [1, 2, 3].map((item) => <div key={item} className="home-destination-skeleton" />) : error ? <div className="home-empty-destinations" role="alert"><strong>Unable to load destinations</strong><p>Please try again to see verified places.</p><button type="button" className="home-primary-action" onClick={onRetry}>Retry</button></div> : previewDestinations.length ? previewDestinations.map((destination) => <article key={destination.id} className="home-destination-card">
           <div className="home-destination-image"><DestinationThumbnail destination={destination} iconSize={28} /><em>{destination.category}</em></div>

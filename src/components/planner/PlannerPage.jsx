@@ -43,7 +43,7 @@ export default function PlannerPage({
               <div className="panel-heading">
                 <span className="eyebrow"><Sparkles size={15} /> Personal planner</span>
                 <h1>Build your day</h1>
-                <p>Choose what matters. We will organize only active, tourism-office verified places.</p>
+                <p>Set your starting point, choose your interests, and make the day your own.</p>
               </div>
               {Object.keys(fieldErrors).length > 0 && <div className="field-error-summary" role="alert">{Object.entries(fieldErrors).map(([field, messages]) => <p key={field}><strong>{field.replaceAll('_', ' ')}:</strong> {messages?.[0]}</p>)}</div>}
     

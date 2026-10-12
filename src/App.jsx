@@ -5,6 +5,7 @@ import AdminAccessPage from './components/admin/AdminAccessPage'
 import { AdminLoginDialog, AuthDialog } from './components/auth/AuthDialogs'
 import { AppModal } from './components/common/Dialogs'
 import LocationMapModal from './components/common/LocationMapModal'
+import TouristSidebar from './components/client/TouristSidebar'
 import ClientHomePage from './components/client/ClientHomePage'
 import ClientDiscoverPage from './components/client/ClientDiscoverPage'
 import DestinationFeedbackDialog from './components/client/DestinationFeedbackDialog'
@@ -85,11 +86,13 @@ function App() {
   const isHomeRoute = view === 'home'
   const isDiscoverRoute = view === 'discover'
   const isRecommendationsRoute = view === 'recommendations'
+  const showTouristSidebar = !isAdminRoute && auth.user.is_authenticated && auth.user.role === 'tourist'
   const showAdminWorkspace = isAdminRoute && !auth.checking && auth.user.role === 'admin'
 
   return (
-    <div className={`app-shell ${!isAdminRoute ? 'with-mobile-nav' : ''} ${isHomeRoute ? 'home-route' : ''} ${isDiscoverRoute ? 'discover-route' : ''}`}>
-      {!isAdminRoute && <header className="topbar">
+    <div className={`app-shell ${showTouristSidebar ? 'tourist-shell' : !isAdminRoute ? 'with-mobile-nav' : ''} ${isHomeRoute ? 'home-route' : ''} ${isDiscoverRoute ? 'discover-route' : ''}`}>
+      {showTouristSidebar && <TouristSidebar user={auth.user} settings={settings} view={view} navigateTo={navigateTo} onShare={planner.shareItinerary} onLogout={() => auth.logout()} />}
+      {!isAdminRoute && !showTouristSidebar && <header className="topbar">
         <a className="brand" href="/" aria-label={`${settings.site_name} home`} onClick={(event) => { event.preventDefault(); navigateTo('home') }}>
           <span className="brand-mark">{settings.logo_url ? <img className="h-full w-full object-contain" src={settings.logo_url} alt="" /> : <Navigation size={20} strokeWidth={2.5} />}</span>
           <span>{settings.site_name}</span>
@@ -111,7 +114,7 @@ function App() {
         </div>
       </header>}
 
-      {!isAdminRoute && <nav className="mobile-nav" aria-label="Mobile navigation">
+      {!isAdminRoute && !showTouristSidebar && <nav className="mobile-nav" aria-label="Mobile navigation">
         <NavigationLink view={'home'} current={isHomeRoute} navigateTo={navigateTo}><Compass size={18} /><span>Home</span></NavigationLink>
         <NavigationLink view={'planner'} current={view === 'planner'} navigateTo={navigateTo}><Route size={18} /><span>Planner</span></NavigationLink>
         <NavigationLink view={'discover'} current={isDiscoverRoute} navigateTo={navigateTo}><MapPin size={18} /><span>Discover</span></NavigationLink>
@@ -120,6 +123,7 @@ function App() {
         {auth.user.role === 'tourist' && <NavigationLink view={'profile'} current={isProfileRoute} navigateTo={navigateTo}><UserRound size={18} /><span>Profile</span></NavigationLink>}
       </nav>}
 
+      <div className={showTouristSidebar ? 'tourist-content' : undefined}>
       <Suspense fallback={<main className="page-loading" role="status">Loading page…</main>}>
       {isAdminRoute
         ? showAdminWorkspace
@@ -190,6 +194,7 @@ function App() {
               onDismissNotice={() => setNotice('')}
             />}
       </Suspense>
+      </div>
 
       {planner.showMap && <LocationMapModal
         draft={{ address: planner.form.starting_location, ...planner.coordinates }}

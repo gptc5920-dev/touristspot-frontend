@@ -21,15 +21,12 @@
   @apply flex items-stretch gap-[22px] self-stretch;
 }
 
-.main-nav a,
-.main-nav button {
+.main-nav :is(button, a) {
   @apply inline-flex items-center gap-[5px] border-x-0 border-t-0 border-b-2 border-transparent bg-transparent p-0 text-sm text-[#667472] no-underline;
 }
 
-.main-nav a:hover,
-.main-nav a.active,
-.main-nav button:hover,
-.main-nav button.active { @apply border-coral-500 text-[#173b3e]; }
+.main-nav :is(button, a):hover,
+.main-nav :is(button, a).active { @apply border-coral-500 text-[#173b3e]; }
 
 .topbar-actions {
   @apply ml-auto flex items-center gap-[14px];

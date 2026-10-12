@@ -1,7 +1,7 @@
 .home-route .topbar { height: 54px; border-bottom-color: #d8e3df; }
 .home-route .topbar .brand { font-size: 15px; }
 .home-route .topbar .brand-mark { width: 29px; height: 29px; }
-.home-route .topbar .main-nav button.active { border-color: #127d77; }
+.home-route .topbar .main-nav :is(button, a).active { border-color: #127d77; }
 .home-hero-shell { background: radial-gradient(circle at 72% 48%, #135d59 0, #0a3535 40%, #092a2c 78%, #071f22 100%); }
 .home-hero { grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: clamp(30px, 5vw, 65px); width: min(1180px, 100%); min-height: 435px; padding: 36px clamp(24px, 4vw, 55px) 85px; }
 .home-hero-copy { max-width: 590px; }

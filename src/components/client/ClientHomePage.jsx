@@ -1,22 +1,23 @@
 import { useEffect, useMemo, useState } from 'react'
 import {
-  ArrowRight, BadgeCheck, CalendarDays, ChevronLeft, ChevronRight, MapPin, MapPinned,
+  ArrowRight, BadgeCheck, CalendarDays, Compass, ChevronLeft, ChevronRight, MapPin, MapPinned,
   MessageCircle, Navigation, Pause, Play, Plus, Route, SlidersHorizontal, Sparkles,
-  Star, UserPlus, UserRound, WandSparkles,
+  Star, WandSparkles,
 } from '../../fontawesome-icons'
 import { peso } from '../../lib/app'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
-import landingWaterfall from '../../assets/landing-waterfall.png'
+import landingWaterfall from '../../assets/landing-waterfall.webp'
+import landingWaterfallSmall from '../../assets/landing-waterfall-small.webp'
 
-function DestinationThumbnail({ destination, className = '', iconSize = 19, decorative = false }) {
+function DestinationThumbnail({ destination, className = '', iconSize = 19, decorative = false, loading = 'lazy' }) {
   const [failed, setFailed] = useState(false)
   useEffect(() => setFailed(false), [destination.image_url])
   return destination.image_url && !failed
-    ? <img src={destination.image_url} alt={decorative ? '' : destination.name} onError={() => setFailed(true)} />
+    ? <img loading={loading} decoding="async" src={destination.image_url} alt={decorative ? '' : destination.name} onError={() => setFailed(true)} />
     : <span className={className}><MapPin size={iconSize} /></span>
 }
 
-export default function ClientHomePage({ destinations, loading, user, onPlan, onDiscover, onSignUp, onProfile, onFeedback }) {
+export default function ClientHomePage({ destinations, loading, error, onRetry, onPlan, onDiscover, onFeedback }) {
   const { settings } = useSiteSettings()
   const topDestinations = useMemo(() => [...destinations]
     .sort((first, second) => {
@@ -29,6 +30,13 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
     .slice(0, 3), [destinations])
   const [activeSlide, setActiveSlide] = useState(0)
   const [carouselPaused, setCarouselPaused] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+  useEffect(() => {
+    const media = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const update = () => setReducedMotion(media.matches)
+    media.addEventListener('change', update)
+    return () => media.removeEventListener('change', update)
+  }, [])
   const featured = topDestinations[activeSlide]
   const [heroImageFailed, setHeroImageFailed] = useState(false)
   const previewDestinations = topDestinations
@@ -36,12 +44,12 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
   const freeDestinationCount = destinations.filter((destination) => Number(destination.entrance_fee || 0) === 0).length
 
   useEffect(() => {
-    if (topDestinations.length < 2 || carouselPaused) return undefined
+    if (topDestinations.length < 2 || carouselPaused || reducedMotion) return undefined
     const timer = window.setInterval(() => {
       setActiveSlide((current) => (current + 1) % topDestinations.length)
     }, 6500)
     return () => window.clearInterval(timer)
-  }, [carouselPaused, topDestinations.length])
+  }, [carouselPaused, reducedMotion, topDestinations.length])
 
   useEffect(() => {
     if (activeSlide >= topDestinations.length) setActiveSlide(0)
@@ -62,22 +70,23 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
         <h1>{settings.tagline}</h1>
         <p>Build a practical itinerary around curated, verified destinations, personalized to your budget and preferred pace.</p>
         <div className="home-hero-stats" aria-label="Travel Osmena overview"><div><strong>{destinations.length || '—'}</strong><span>Verified destinations</span></div><div><strong>{categoryCount || '—'}</strong><span>Travel categories</span></div><div><strong>{freeDestinationCount}</strong><span>Free entrances</span></div></div>
-        <div className="home-hero-actions"><button type="button" className="home-primary-action" onClick={() => onPlan()}><WandSparkles size={18} /> Build my itinerary <ArrowRight size={17} /></button>{user.role === 'tourist' ? <button type="button" className="home-secondary-action" onClick={onProfile}><UserRound size={17} /> My travel profile</button> : <button type="button" className="home-secondary-action" onClick={onSignUp}><UserPlus size={17} /> Create tourist account</button>}</div>
+        <div className="home-hero-actions"><button type="button" className="home-primary-action" onClick={() => onPlan()}><WandSparkles size={18} /> Build my itinerary <ArrowRight size={17} /></button><button type="button" className="home-secondary-action" onClick={onDiscover}><Compass size={17} /> Explore destinations</button></div>
       </div>
-      <div className="home-visual-stage"><div className="home-hero-visual" role="region" aria-roledescription="carousel" aria-label="Featured destinations" style={{ backgroundImage: `url(${landingWaterfall})`, backgroundPosition: 'center', backgroundSize: 'cover' }}>
+      <div className="home-visual-stage"><div className="home-hero-visual" role="region" aria-roledescription="carousel" aria-label="Featured destinations" >
+        <img className="home-carousel-image" src={landingWaterfall} srcSet={`${landingWaterfallSmall} 640w, ${landingWaterfall} 1280w`} sizes="(max-width: 760px) 100vw, 50vw" alt="" fetchPriority="high" />
         {featured?.image_url && !heroImageFailed && <img key={featured.id} className="home-carousel-image" src={featured.image_url} alt={featured.name} onError={() => setHeroImageFailed(true)} />}
         <div className="home-visual-shade" />
         <button type="button" className="home-featured-card" onClick={onDiscover}>Explore Verified Destinations <ArrowRight size={16} /></button>
-        <div className="home-ai-badge"><Sparkles size={16} /><span><strong>Personalized Hybrid Recommendations</strong><small>Personalized to your trip</small></span></div>
+        <div className="home-ai-badge"><Sparkles size={16} /><span><strong>Trips tailored to your interests</strong><small>Personalized to your trip</small></span></div>
         {topDestinations.length > 1 && <div className="home-carousel-controls">
           <button type="button" onClick={() => moveCarousel(-1)} aria-label="Show previous top destination"><ChevronLeft size={17} /></button>
-          <button type="button" onClick={() => setCarouselPaused((current) => !current)} aria-label={carouselPaused ? 'Play destination carousel' : 'Pause destination carousel'}>{carouselPaused ? <Play size={15} /> : <Pause size={15} />}</button>
+          <button type="button" disabled={reducedMotion} onClick={() => setCarouselPaused((current) => !current)} aria-label={reducedMotion ? 'Automatic rotation disabled by reduced motion preference' : carouselPaused ? 'Play destination carousel' : 'Pause destination carousel'}>{carouselPaused || reducedMotion ? <Play size={15} /> : <Pause size={15} />}</button>
           <button type="button" onClick={() => moveCarousel(1)} aria-label="Show next top destination"><ChevronRight size={17} /></button>
           <div className="home-carousel-dots" role="group" aria-label="Choose a top destination">{topDestinations.map((destination, index) => <button key={destination.id} type="button" className={activeSlide === index ? 'active' : ''} aria-current={activeSlide === index ? 'true' : undefined} aria-label={`Show ${destination.name}`} onClick={() => { setActiveSlide(index); setCarouselPaused(true) }} />)}</div>
         </div>}
       </div>
       {topDestinations.map((destination, index) => <button type="button" key={destination.id} className={`home-floating-destination home-floating-destination-${index + 1}`} onClick={() => onPlan(destination.id)} aria-label={`Plan a visit to ${destination.name}`}>
-        <DestinationThumbnail destination={destination} className="home-floating-placeholder" decorative />
+        <DestinationThumbnail destination={destination} className="home-floating-placeholder" decorative loading="eager" />
         <span className="home-floating-copy"><strong>{destination.name}</strong><small><Star size={11} fill="currentColor" /> {destination.average_rating || 'New'}{destination.average_rating ? ' / 5' : ''}</small></span>
       </button>)}
       </div>
@@ -92,7 +101,7 @@ export default function ClientHomePage({ destinations, loading, user, onPlan, on
     <section id="featured-destinations" className="home-section home-destinations">
       <header className="home-section-heading"><div><span className="home-kicker"><MapPinned size={15} /> Discover locally</span><h2>Places worth adding to your day</h2><p>Explore active, verified destinations before adding them to your personalized itinerary.</p></div><button type="button" className="home-text-action" onClick={() => onPlan()}><span>Open all in planner</span><ArrowRight size={16} /></button></header>
       <div className="home-destination-grid">
-        {loading ? [1, 2, 3].map((item) => <div key={item} className="home-destination-skeleton" />) : previewDestinations.length ? previewDestinations.map((destination) => <article key={destination.id} className="home-destination-card">
+        {loading ? [1, 2, 3].map((item) => <div key={item} className="home-destination-skeleton" />) : error ? <div className="home-empty-destinations" role="alert"><strong>Unable to load destinations</strong><p>Please try again to see verified places.</p><button type="button" className="home-primary-action" onClick={onRetry}>Retry</button></div> : previewDestinations.length ? previewDestinations.map((destination) => <article key={destination.id} className="home-destination-card">
           <div className="home-destination-image"><DestinationThumbnail destination={destination} iconSize={28} /><em>{destination.category}</em></div>
           <div className="home-destination-content"><div className="home-destination-rating"><Star size={13} fill={destination.average_rating ? 'currentColor' : 'none'} /><span>{destination.average_rating ?? 'New'}</span><small>{destination.review_count ? `${destination.review_count} review${destination.review_count === 1 ? '' : 's'}` : 'No reviews yet'}</small></div><h3>{destination.name}</h3><p>{destination.description}</p><span className="home-destination-address"><MapPin size={13} /> {destination.area}</span><footer><span><small>Entrance fee</small><strong>{peso.format(Number(destination.entrance_fee || 0))}</strong></span><div><button type="button" onClick={() => onFeedback(destination)}><MessageCircle size={15} /> Reviews</button><button type="button" onClick={() => onPlan(destination.id)}>Add to planner <Plus size={15} /></button></div></footer></div>
         </article>) : <div className="home-empty-destinations"><MapPinned size={30} /><strong>Destinations are being prepared</strong><p>Verified places will appear here when the tourism team publishes them.</p></div>}

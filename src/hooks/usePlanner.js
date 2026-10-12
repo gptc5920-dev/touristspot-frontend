@@ -22,7 +22,12 @@ export default function usePlanner({
   const [openSection, setOpenSection] = useState('when')
   const [fieldErrors, setFieldErrors] = useState({})
 
+  const [destinationError, setDestinationError] = useState('')
+  const [destinationRequest, setDestinationRequest] = useState(0)
+
   useEffect(() => {
+    setLoading(true)
+    setDestinationError('')
     let cancelled = false
     async function loadDestinations() {
       try {
@@ -33,14 +38,14 @@ export default function usePlanner({
           ...destination, image_url: resolveMediaUrl(destination.image_url),
         })))
       } catch (requestError) {
-        if (!cancelled) onError(requestErrorMessage(requestError, 'Could not load verified destinations.'))
+        if (!cancelled) setDestinationError(requestErrorMessage(requestError, 'Could not load verified destinations.'))
       } finally {
         if (!cancelled) setLoading(false)
       }
     }
     loadDestinations()
     return () => { cancelled = true }
-  }, [apiFetch, onError])
+  }, [apiFetch, destinationRequest])
 
   const selectedDestinationIds = useMemo(
     () => new Set(form.preferred_destinations),
@@ -281,6 +286,8 @@ export default function usePlanner({
   return {
     form,
     destinations,
+    destinationError,
+    retryDestinations: () => setDestinationRequest((current) => current + 1),
     itinerary,
     loading,
     generating,

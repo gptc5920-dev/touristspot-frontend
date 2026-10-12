@@ -1,18 +1,21 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { ROUTES } from '../config/travel'
 import { viewFromPath } from '../lib/app'
 
 export default function useNavigation() {
   const [view, setView] = useState(() => viewFromPath(window.location.pathname))
 
+  const discoverSearch = useRef(viewFromPath(window.location.pathname) === 'discover' ? window.location.search : '')
+
   const navigateTo = useCallback((nextView, { replace = false } = {}) => {
     const resolvedView = Object.hasOwn(ROUTES, nextView) ? nextView : 'home'
-    const path = ROUTES[resolvedView]
+    if (viewFromPath(window.location.pathname) === 'discover') discoverSearch.current = window.location.search
+    const path = ROUTES[resolvedView] + (resolvedView === 'discover' ? discoverSearch.current : '')
     setView(resolvedView)
-    if (window.location.pathname !== path) {
+    if (`${window.location.pathname}${window.location.search}` !== path) {
       window.history[replace ? 'replaceState' : 'pushState']({}, '', path)
     }
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    window.scrollTo({ top: 0, behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth' })
   }, [])
 
   useEffect(() => {

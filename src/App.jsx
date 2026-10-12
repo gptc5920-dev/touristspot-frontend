@@ -1,17 +1,13 @@
-import { useEffect, useState } from 'react'
+import { ROUTES } from './config/travel'
+import { lazy, Suspense, useEffect, useState } from 'react'
 import { BadgeCheck, Compass, LayoutDashboard, LogIn, LogOut, MapPin, Navigation, Route, Share2, Sparkles, UserPlus, UserRound } from './fontawesome-icons'
 import AdminAccessPage from './components/admin/AdminAccessPage'
-import AdminWorkspace from './components/admin/AdminWorkspace'
 import { AdminLoginDialog, AuthDialog } from './components/auth/AuthDialogs'
 import { AppModal } from './components/common/Dialogs'
 import LocationMapModal from './components/common/LocationMapModal'
 import ClientHomePage from './components/client/ClientHomePage'
 import ClientDiscoverPage from './components/client/ClientDiscoverPage'
 import DestinationFeedbackDialog from './components/client/DestinationFeedbackDialog'
-import TouristProfilePage from './components/client/TouristProfilePage'
-import PlannerPage from './components/planner/PlannerPage'
-import PreferenceOnboardingPage from './components/recommendations/PreferenceOnboardingPage'
-import RecommendationsPage from './components/recommendations/RecommendationsPage'
 import { useSiteSettings } from './contexts/siteSettingsState'
 import useApiFetch from './hooks/useApiFetch'
 import useAuthentication from './hooks/useAuthentication'
@@ -19,6 +15,20 @@ import useNavigation from './hooks/useNavigation'
 import usePlanner from './hooks/usePlanner'
 import useTouristRecommendations from './hooks/useTouristRecommendations'
 import './styles/index.css'
+
+const AdminWorkspace = lazy(() => import('./components/admin/AdminWorkspace'))
+const TouristProfilePage = lazy(() => import('./components/client/TouristProfilePage'))
+const PlannerPage = lazy(() => import('./components/planner/PlannerPage'))
+const PreferenceOnboardingPage = lazy(() => import('./components/recommendations/PreferenceOnboardingPage'))
+const RecommendationsPage = lazy(() => import('./components/recommendations/RecommendationsPage'))
+
+function NavigationLink({ view, current, navigateTo, children }) {
+  return <a href={ROUTES[view]} className={current ? 'active' : ''} aria-current={current ? 'page' : undefined} onClick={(event) => {
+    if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return
+    event.preventDefault()
+    navigateTo(view)
+  }}>{children}</a>
+}
 
 function App() {
   const [error, setError] = useState('')
@@ -85,12 +95,12 @@ function App() {
           <span>{settings.site_name}</span>
         </a>
         <nav className="main-nav" aria-label="Primary navigation">
-          <button type="button" className={isHomeRoute ? 'active' : ''} onClick={() => navigateTo('home')}>Home</button>
-          <button type="button" className={view === 'planner' ? 'active' : ''} onClick={() => navigateTo('planner')}>Planner</button>
-          <button type="button" className={isDiscoverRoute ? 'active' : ''} onClick={showDiscover}>Discover</button>
-          {auth.user.role === 'admin' && <button type="button" onClick={() => navigateTo('admin')}><LayoutDashboard size={15} /> Dashboard</button>}
-          {auth.user.role === 'tourist' && <button type="button" className={isRecommendationsRoute ? 'active' : ''} onClick={() => navigateTo(auth.user.preferences_completed ? 'recommendations' : 'preferences')}><Sparkles size={15} /> Recommendations</button>}
-          {auth.user.role === 'tourist' && <button type="button" className={isProfileRoute ? 'active' : ''} onClick={() => navigateTo('profile')}><UserRound size={15} /> Profile</button>}
+          <NavigationLink view={'home'} current={isHomeRoute} navigateTo={navigateTo}>Home</NavigationLink>
+          <NavigationLink view={'planner'} current={view === 'planner'} navigateTo={navigateTo}>Planner</NavigationLink>
+          <NavigationLink view={'discover'} current={isDiscoverRoute} navigateTo={navigateTo}>Discover</NavigationLink>
+          {auth.user.role === 'admin' && <NavigationLink view={'admin'} current={isAdminRoute} navigateTo={navigateTo}><LayoutDashboard size={15} /> Dashboard</NavigationLink>}
+          {auth.user.role === 'tourist' && <NavigationLink view={auth.user.preferences_completed ? 'recommendations' : 'preferences'} current={['preferences', 'recommendations'].includes(view)} navigateTo={navigateTo}><Sparkles size={15} /> Recommendations</NavigationLink>}
+          {auth.user.role === 'tourist' && <NavigationLink view={'profile'} current={isProfileRoute} navigateTo={navigateTo}><UserRound size={15} /> Profile</NavigationLink>}
         </nav>
         <div className="topbar-actions">
           {!isHomeRoute && !isDiscoverRoute && <span className="verified"><BadgeCheck size={16} /> Verified tourism data</span>}
@@ -102,14 +112,15 @@ function App() {
       </header>}
 
       {!isAdminRoute && <nav className="mobile-nav" aria-label="Mobile navigation">
-        <button type="button" className={isHomeRoute ? 'active' : ''} aria-current={isHomeRoute ? 'page' : undefined} onClick={() => navigateTo('home')}><Compass size={18} /><span>Home</span></button>
-        <button type="button" className={view === 'planner' ? 'active' : ''} aria-current={view === 'planner' ? 'page' : undefined} onClick={() => navigateTo('planner')}><Route size={18} /><span>Planner</span></button>
-        <button type="button" className={isDiscoverRoute ? 'active' : ''} aria-current={isDiscoverRoute ? 'page' : undefined} onClick={showDiscover}><MapPin size={18} /><span>Discover</span></button>
-        {auth.user.role === 'admin' && <button type="button" onClick={() => navigateTo('admin')}><LayoutDashboard size={18} /><span>Dashboard</span></button>}
-        {auth.user.role === 'tourist' && <button type="button" className={['preferences', 'recommendations'].includes(view) ? 'active' : ''} aria-current={['preferences', 'recommendations'].includes(view) ? 'page' : undefined} onClick={() => navigateTo(auth.user.preferences_completed ? 'recommendations' : 'preferences')}><Sparkles size={18} /><span>Matches</span></button>}
-        {auth.user.role === 'tourist' && <button type="button" className={isProfileRoute ? 'active' : ''} aria-current={isProfileRoute ? 'page' : undefined} onClick={() => navigateTo('profile')}><UserRound size={18} /><span>Profile</span></button>}
+        <NavigationLink view={'home'} current={isHomeRoute} navigateTo={navigateTo}><Compass size={18} /><span>Home</span></NavigationLink>
+        <NavigationLink view={'planner'} current={view === 'planner'} navigateTo={navigateTo}><Route size={18} /><span>Planner</span></NavigationLink>
+        <NavigationLink view={'discover'} current={isDiscoverRoute} navigateTo={navigateTo}><MapPin size={18} /><span>Discover</span></NavigationLink>
+        {auth.user.role === 'admin' && <NavigationLink view={'admin'} current={isAdminRoute} navigateTo={navigateTo}><LayoutDashboard size={18} /><span>Dashboard</span></NavigationLink>}
+        {auth.user.role === 'tourist' && <NavigationLink view={auth.user.preferences_completed ? 'recommendations' : 'preferences'} current={['preferences', 'recommendations'].includes(view)} navigateTo={navigateTo}><Sparkles size={18} /><span>Matches</span></NavigationLink>}
+        {auth.user.role === 'tourist' && <NavigationLink view={'profile'} current={isProfileRoute} navigateTo={navigateTo}><UserRound size={18} /><span>Profile</span></NavigationLink>}
       </nav>}
 
+      <Suspense fallback={<main className="page-loading" role="status">Loading page…</main>}>
       {isAdminRoute
         ? showAdminWorkspace
           ? <AdminWorkspace apiFetch={apiFetch} user={auth.user} onLogout={() => auth.logout({ stayOnAdmin: true })} onModal={setModal} />
@@ -143,18 +154,18 @@ function App() {
             onAddToItinerary={planner.addRecommendationToPlanner}
           />
           : isDiscoverRoute
-          ? <ClientDiscoverPage destinations={planner.destinations} loading={planner.loading} error={error} onPlan={planner.startPlanning} onFeedback={setFeedbackDestination} />
+          ? <ClientDiscoverPage destinations={planner.destinations} loading={planner.loading} error={planner.destinationError} onRetry={planner.retryDestinations} onPlan={planner.startPlanning} onFeedback={setFeedbackDestination} />
           : isProfileRoute
           ? <TouristProfilePage apiFetch={apiFetch} user={auth.user} checking={auth.checking} onSignIn={() => auth.openAuth('signin')} onSignUp={() => auth.openAuth('signup')} onBack={() => navigateTo('planner')} onUserChange={auth.setUser} onProfileSaved={recommendations.syncProfilePreferences} onUsePreferences={planner.applyProfilePreferences} />
           : isHomeRoute
-            ? <ClientHomePage destinations={planner.destinations} loading={planner.loading} user={auth.user} onPlan={planner.startPlanning} onDiscover={showDiscover} onSignUp={() => auth.openAuth('signup')} onProfile={() => navigateTo('profile')} onFeedback={setFeedbackDestination} />
+            ? <ClientHomePage destinations={planner.destinations} loading={planner.loading} error={planner.destinationError} onRetry={planner.retryDestinations} onPlan={planner.startPlanning} onDiscover={showDiscover} onFeedback={setFeedbackDestination} />
             : <PlannerPage
               form={planner.form}
               destinations={planner.destinations}
               itinerary={planner.itinerary}
               loading={planner.loading}
               generating={planner.generating}
-              error={error}
+              error={error || planner.destinationError}
               notice={notice}
               focusedStop={planner.focusedStop}
               plannerOpenSection={planner.openSection}
@@ -178,6 +189,7 @@ function App() {
               onDismissError={() => setError('')}
               onDismissNotice={() => setNotice('')}
             />}
+      </Suspense>
 
       {planner.showMap && <LocationMapModal
         draft={{ address: planner.form.starting_location, ...planner.coordinates }}

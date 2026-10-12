@@ -1,5 +1,5 @@
 .discover-route .topbar { height: 54px; }
-.discover-route .topbar .main-nav button.active { border-color: #127d77; }
+.discover-route .topbar .main-nav :is(button, a).active { border-color: #127d77; }
 .discover-page { min-height: calc(100vh - 54px); color: #172d2d; background: #f7f9f7; }
 .discover-container { width: min(1440px, 100%); margin: 0 auto; padding: 28px 24px 56px; }
 .discover-heading h1 { max-width: 1180px; margin: 0 0 15px; color: #172c2b; font-family: Georgia, 'Times New Roman', serif; font-size: clamp(25px, 2.75vw, 38px); font-weight: 500; line-height: 1.22; letter-spacing: -.035em; }

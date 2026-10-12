@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react'
+import DialogSurface from './DialogSurface'
+import { useRef, useState } from 'react'
 import { Check, CircleAlert, LocateFixed, MapPin, MapPinned, RefreshCw, Search, X } from '../../fontawesome-icons'
 import SelectableMap from './SelectableMap'
 
@@ -15,18 +16,6 @@ export default function LocationMapModal({ draft, onApply, onClose, eyebrow = 'D
   const [searching, setSearching] = useState(false)
   const lastSearchAt = useRef(0)
 
-  useEffect(() => {
-    const previousOverflow = document.body.style.overflow
-    document.body.style.overflow = 'hidden'
-    const closeOnEscape = (event) => {
-      if (event.key === 'Escape') onClose()
-    }
-    window.addEventListener('keydown', closeOnEscape)
-    return () => {
-      document.body.style.overflow = previousOverflow
-      window.removeEventListener('keydown', closeOnEscape)
-    }
-  }, [onClose])
 
   function validCoordinates() {
     const parsedLatitude = Number(latitude)
@@ -117,7 +106,7 @@ export default function LocationMapModal({ draft, onApply, onClose, eyebrow = 'D
   }
 
   return <div className="modal-backdrop map-modal-backdrop" role="presentation" onMouseDown={(event) => { if (event.target === event.currentTarget) onClose() }}>
-    <section className="location-map-dialog" role="dialog" aria-modal="true" aria-labelledby="location-map-title">
+    <DialogSurface onClose={onClose} className="location-map-dialog" role="dialog" aria-modal="true" aria-labelledby="location-map-title">
       <header><div><span className="map-dialog-icon"><MapPinned size={20} /></span><div><span className="eyebrow">{eyebrow}</span><h2 id="location-map-title">{title}</h2><p>{description}</p></div></div><button type="button" className="dialog-close" title="Close map" onClick={onClose}><X size={18} /></button></header>
       <div className="location-map-layout">
         <div className="embedded-map-frame"><SelectableMap latitude={latitude} longitude={longitude} target={mapTarget} onSelect={selectPin} /></div>
@@ -130,6 +119,6 @@ export default function LocationMapModal({ draft, onApply, onClose, eyebrow = 'D
           <div className="map-dialog-actions"><button type="button" className="admin-access-secondary" onClick={onClose}>Cancel</button><button type="submit" className="admin-primary-button"><Check size={16} /> {applyLabel}</button></div>
         </form>
       </div>
-    </section>
+    </DialogSurface>
   </div>
 }

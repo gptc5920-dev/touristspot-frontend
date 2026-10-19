@@ -1,4 +1,4 @@
-const API_BASE_URL = (import.meta.env.VITE_API_URL || '/api').replace(/\/$/, '')
+const API_BASE_URL = (import.meta.env?.VITE_API_URL || '/api').replace(/\/$/, '')
 
 export function apiEndpoint(path) {
   return `${API_BASE_URL}/${path.replace(/^\//, '')}`
@@ -7,6 +7,19 @@ export function apiEndpoint(path) {
 export function resolveMediaUrl(url) {
   if (!url || !url.startsWith('/media/')) return url || ''
   return `${new URL(API_BASE_URL, window.location.origin).origin}${url}`
+}
+
+export function resolveDestinationMedia(destination) {
+  return { ...destination, image_url: resolveMediaUrl(destination.image_url) }
+}
+
+export function resolveItineraryMedia(itinerary) {
+  return {
+    ...itinerary,
+    stops: (itinerary.stops || []).map(resolveDestinationMedia),
+    alternatives: (itinerary.alternatives || []).map(resolveDestinationMedia),
+    map: (itinerary.map || []).map(resolveDestinationMedia),
+  }
 }
 
 export async function readApiJson(response) {

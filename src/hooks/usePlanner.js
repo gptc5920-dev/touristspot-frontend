@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { readApiJson, resolveMediaUrl } from '../api'
+import { readApiJson, resolveDestinationMedia, resolveItineraryMedia } from '../api'
 import { INITIAL_PLANNER_FORM } from '../config/travel'
 import { apiErrorMessage, requestErrorMessage } from '../lib/app'
 
@@ -34,9 +34,7 @@ export default function usePlanner({
         const response = await apiFetch('/destinations/')
         if (!response.ok) throw new Error('Destination data is unavailable.')
         const body = await readApiJson(response)
-        if (!cancelled) setDestinations((body.destinations || []).map((destination) => ({
-          ...destination, image_url: resolveMediaUrl(destination.image_url),
-        })))
+        if (!cancelled) setDestinations((body.destinations || []).map(resolveDestinationMedia))
       } catch (requestError) {
         if (!cancelled) setDestinationError(requestErrorMessage(requestError, 'Could not load verified destinations.'))
       } finally {
@@ -145,7 +143,7 @@ export default function usePlanner({
         else if (body.errors?.interests) setOpenSection('interests')
         throw new Error(body.message || body.error || 'The system could not generate your itinerary.')
       }
-      setItinerary(body.itinerary)
+      setItinerary(resolveItineraryMedia(body.itinerary))
       setFocusedStop(body.itinerary.map?.[0]?.id || null)
     } catch (requestError) {
       const message = requestErrorMessage(requestError, 'The system could not generate your itinerary.')

@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
-import { readApiJson } from '../api'
+import { readApiJson, resolveDestinationMedia } from '../api'
 import { EMPTY_TOURIST_PREFERENCES } from '../config/preferences'
 import { apiErrorMessage, authUserFromPayload, requestErrorMessage } from '../lib/app'
 
@@ -103,7 +103,10 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
         throw responseError
       }
       if (requestIdentity !== activeUserIdentity.current) return false
-      setRecommendationData(body)
+      setRecommendationData({
+        ...body,
+        recommendations: (body.recommendations || []).map(resolveDestinationMedia),
+      })
       setRecommendationOwner(requestIdentity)
       return true
     } catch (requestError) {

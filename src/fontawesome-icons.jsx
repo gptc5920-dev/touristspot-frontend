@@ -7,13 +7,16 @@ import {
   faArrowRotateLeft,
   faArrowUp,
   faBars,
+  faBagShopping,
   faBookmark,
   faBuilding,
   faCalendarDays,
   faCalendarWeek,
+  faCamera,
   faCar,
   faChartColumn,
   faCheck,
+  faChurch,
   faChevronDown,
   faChevronLeft,
   faChevronRight,
@@ -32,8 +35,11 @@ import {
   faFileLines,
   faFloppyDisk,
   faGear,
+  faHeart,
   faImage,
   faLanguage,
+  faLandmark,
+  faLeaf,
   faLink,
   faListCheck,
   faLocationArrow,
@@ -41,6 +47,7 @@ import {
   faLocationDot,
   faMagnifyingGlass,
   faMapLocationDot,
+  faMountainSun,
   faPaperPlane,
   faPause,
   faPenToSquare,
@@ -56,15 +63,18 @@ import {
   faShieldHalved,
   faSliders,
   faStar,
+  faSun,
   faTableColumns,
   faTrashCan,
   faTriangleExclamation,
   faUpload,
+  faUniversalAccess,
   faUser,
   faUserPlus,
   faUsers,
   faUtensils,
   faWallet,
+  faWater,
   faWandMagicSparkles,
   faXmark,
 } from '@fortawesome/free-solid-svg-icons'
@@ -74,7 +84,7 @@ function createIcon(icon, displayName) {
     <FontAwesomeIcon
       icon={icon}
       {...props}
-      style={{ width: size, height: size, ...style }}
+      style={{ width: size, height: size, flexShrink: 0, ...style }}
     />
   )
   Icon.displayName = displayName
@@ -82,6 +92,16 @@ function createIcon(icon, displayName) {
 }
 
 export const ArrowRight = createIcon(faArrowRight, 'ArrowRight')
+export const Accessibility = createIcon(faUniversalAccess, 'Accessibility')
+export const Camera = createIcon(faCamera, 'Camera')
+export const Church = createIcon(faChurch, 'Church')
+export const Heart = createIcon(faHeart, 'Heart')
+export const Landmark = createIcon(faLandmark, 'Landmark')
+export const Leaf = createIcon(faLeaf, 'Leaf')
+export const Mountain = createIcon(faMountainSun, 'Mountain')
+export const ShoppingBag = createIcon(faBagShopping, 'ShoppingBag')
+export const Sun = createIcon(faSun, 'Sun')
+export const Waves = createIcon(faWater, 'Waves')
 export const ArrowUp = createIcon(faArrowUp, 'ArrowUp')
 export const BadgeCheck = createIcon(faCircleCheck, 'BadgeCheck')
 export const Bookmark = createIcon(faBookmark, 'Bookmark')

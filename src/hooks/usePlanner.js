@@ -2,6 +2,13 @@ import { useEffect, useMemo, useState } from 'react'
 import { readApiJson, resolveDestinationMedia, resolveItineraryMedia } from '../api'
 import { INITIAL_PLANNER_FORM } from '../config/travel'
 import { apiErrorMessage, requestErrorMessage } from '../lib/app'
+import { preferredDestinationErrors } from '../lib/destinationAvailability'
+
+function sectionForErrors(errors) {
+  if (errors.preferred_destinations || errors.excluded_destinations || errors.destinations) return 'places'
+  if (['travel_date', 'starting_location', 'start_time', 'end_time'].some((field) => errors[field])) return 'when'
+  return errors.interests ? 'interests' : 'style'
+}
 
 export default function usePlanner({
   apiFetch,
@@ -73,8 +80,10 @@ export default function usePlanner({
     setFieldErrors((current) => {
       const next = { ...current }
       delete next[field]
+      if (field === 'travel_date') delete next.preferred_destinations
       return next
     })
+    onError('')
     setForm((current) => ({ ...current, [field]: value }))
     setItinerary(null)
   }
@@ -96,6 +105,13 @@ export default function usePlanner({
 
   function toggleDestination(id) {
     setItinerary(null)
+    setFieldErrors((current) => {
+      const next = { ...current }
+      delete next.preferred_destinations
+      delete next.excluded_destinations
+      return next
+    })
+    onError('')
     setForm((current) => ({
       ...current,
       preferred_destinations: current.preferred_destinations.includes(id)
@@ -110,6 +126,8 @@ export default function usePlanner({
     const today = new Date(Date.now() - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 10)
     if (!destinations.length) errors.destinations = ['No verified destinations are available yet.']
     if (!preferences.travel_date || preferences.travel_date < today) errors.travel_date = ['Choose today or a future date.']
+    const destinationErrors = preferredDestinationErrors(preferences, destinations)
+    if (destinationErrors.length) errors.preferred_destinations = destinationErrors
     if (!preferences.starting_location?.trim()) errors.starting_location = ['Enter a starting location.']
     if (!preferences.start_time) errors.start_time = ['Choose a start time.']
     if (!preferences.end_time || preferences.end_time <= preferences.start_time) errors.end_time = ['Return time must be later than the start time.']
@@ -123,7 +141,7 @@ export default function usePlanner({
     const validationErrors = validate(preferences)
     if (Object.keys(validationErrors).length) {
       setFieldErrors(validationErrors)
-      setOpenSection(['travel_date', 'starting_location', 'start_time', 'end_time'].some((field) => validationErrors[field]) ? 'when' : validationErrors.interests ? 'interests' : 'style')
+      setOpenSection(sectionForErrors(validationErrors))
       onModal({ title: 'Review your trip details', message: Object.values(validationErrors).map((messages) => messages[0]).join(' '), tone: 'warning' })
       return
     }
@@ -139,9 +157,8 @@ export default function usePlanner({
       const body = await readApiJson(response)
       if (!response.ok) {
         setFieldErrors(body.errors || {})
-        if (Object.keys(body.errors || {}).some((field) => ['travel_date', 'starting_location', 'start_time', 'end_time'].includes(field))) setOpenSection('when')
-        else if (body.errors?.interests) setOpenSection('interests')
-        throw new Error(body.message || body.error || 'The system could not generate your itinerary.')
+        if (Object.keys(body.errors || {}).length) setOpenSection(sectionForErrors(body.errors))
+        throw new Error(apiErrorMessage(body, body.message || 'The system could not generate your itinerary.'))
       }
       setItinerary(resolveItineraryMedia(body.itinerary))
       setFocusedStop(body.itinerary.map?.[0]?.id || null)

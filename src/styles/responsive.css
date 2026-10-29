@@ -282,8 +282,6 @@ p { overflow-wrap: anywhere; }
   .home-featured-card { right: 14px; bottom: 16px; left: 14px; }
   .home-featured-card h2 { font-size: 22px; }
   .home-section { padding: 58px 0; }
-  .home-destination-content > footer { display: grid; align-items: start; }
-  .home-destination-content > footer > div { display: flex; width: 100%; justify-content: space-between; }
   .home-cta { padding: 28px 20px; }
 
   .itinerary-area { padding-inline: 14px; }
@@ -325,7 +323,6 @@ p { overflow-wrap: anywhere; }
 @media (max-width: 360px) {
   .topbar .brand > span:last-child { max-width: 112px; }
   .home-featured-card > div { align-items: flex-start; flex-direction: column; }
-  .home-destination-content > footer > div { display: grid; gap: 10px; }
   .itinerary-actions { grid-template-columns: 1fr; }
   .rating-summary { align-items: flex-start; }
 }

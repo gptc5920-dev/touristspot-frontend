@@ -33,7 +33,6 @@
 @media (min-width: 861px) and (max-width: 1180px) {
   .tourist-shell .home-hero { grid-template-columns: 1fr; }
   .tourist-shell .home-visual-stage { width: min(560px, 100%); margin-inline: auto; }
-  .tourist-shell .home-destination-grid { grid-template-columns: 1fr; }
   .tourist-shell .planner-layout { display: block; }
   .tourist-shell .preference-panel { position: static; height: auto; max-height: none; overflow: visible; border-right: 0; border-bottom: 1px solid #dce5e1; }
 }

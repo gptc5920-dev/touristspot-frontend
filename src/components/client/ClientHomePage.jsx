@@ -9,12 +9,12 @@ import { useSiteSettings } from '../../contexts/siteSettingsState'
 import landingWaterfall from '../../assets/landing-waterfall.webp'
 import landingWaterfallSmall from '../../assets/landing-waterfall-small.webp'
 
-function DestinationThumbnail({ destination, className = '', iconSize = 19, decorative = false, loading = 'lazy' }) {
+function DestinationThumbnail({ destination, className = '', iconSize = 19, decorative = false, loading = 'lazy', placeholderLabel = '' }) {
   const [failed, setFailed] = useState(false)
   useEffect(() => setFailed(false), [destination.image_url])
   return destination.image_url && !failed
     ? <img loading={loading} decoding="async" src={destination.image_url} alt={decorative ? '' : destination.name} onError={() => setFailed(true)} />
-    : <span className={className}><MapPin size={iconSize} /></span>
+    : <span className={className} role={decorative ? undefined : 'img'} aria-label={decorative ? undefined : `Photo unavailable for ${destination.name}`}><MapPin size={iconSize} aria-hidden="true" />{placeholderLabel && <small aria-hidden="true">{placeholderLabel}</small>}</span>
 }
 
 export default function ClientHomePage({ destinations, loading, error, onRetry, onPlan, onDiscover, onFeedback }) {
@@ -102,8 +102,20 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
       <header className="home-section-heading"><div><span className="home-kicker"><MapPinned size={15} /> Discover locally</span><h2>Places worth adding to your day</h2><p>Explore active, verified destinations before adding them to your personalized itinerary.</p></div><button type="button" className="home-text-action" onClick={() => onPlan()}><span>Open all in planner</span><ArrowRight size={16} /></button></header>
       <div className="home-destination-grid">
         {loading ? [1, 2, 3].map((item) => <div key={item} className="home-destination-skeleton" />) : error ? <div className="home-empty-destinations" role="alert"><strong>Unable to load destinations</strong><p>Please try again to see verified places.</p><button type="button" className="home-primary-action" onClick={onRetry}>Retry</button></div> : previewDestinations.length ? previewDestinations.map((destination) => <article key={destination.id} className="home-destination-card">
-          <div className="home-destination-image"><DestinationThumbnail destination={destination} iconSize={28} /><em>{destination.category}</em></div>
-          <div className="home-destination-content"><div className="home-destination-rating"><Star size={13} fill={destination.average_rating ? 'currentColor' : 'none'} /><span>{destination.average_rating ?? 'New'}</span><small>{destination.review_count ? `${destination.review_count} review${destination.review_count === 1 ? '' : 's'}` : 'No reviews yet'}</small></div><h3>{destination.name}</h3><p>{destination.description}</p><span className="home-destination-address"><MapPin size={13} /> {destination.area}</span><footer><span><small>Entrance fee</small><strong>{peso.format(Number(destination.entrance_fee || 0))}</strong></span><div><button type="button" onClick={() => onFeedback(destination)}><MessageCircle size={15} /> Reviews</button><button type="button" onClick={() => onPlan(destination.id)}>Add to planner <Plus size={15} /></button></div></footer></div>
+          <div className="home-destination-image"><DestinationThumbnail destination={destination} iconSize={28} placeholderLabel="Photo unavailable" /><em>{destination.category}</em></div>
+          <div className="home-destination-content">
+            <div className="home-destination-rating"><Star size={14} aria-hidden="true" /><span>{destination.average_rating ?? 'New'}</span><small>{destination.review_count ? `${destination.review_count} review${destination.review_count === 1 ? '' : 's'}` : 'No reviews yet'}</small></div>
+            <h3>{destination.name}</h3>
+            <p>{destination.description}</p>
+            <span className="home-destination-address"><MapPin size={14} aria-hidden="true" /><span>{destination.area || destination.address || 'Location not listed'}</span></span>
+            <footer>
+              <span className="home-destination-fee"><small>Entrance fee</small><strong>{destination.entrance_fee == null ? 'Not listed' : Number(destination.entrance_fee) === 0 ? 'Free' : peso.format(Number(destination.entrance_fee))}</strong></span>
+              <div className="home-destination-actions">
+                <button type="button" className="home-destination-reviews" aria-label={`Read reviews for ${destination.name}`} onClick={() => onFeedback(destination)}><MessageCircle size={16} aria-hidden="true" /> Reviews</button>
+                <button type="button" className="home-destination-plan" aria-label={`Add ${destination.name} to planner`} onClick={() => onPlan(destination.id)}><Plus size={16} aria-hidden="true" /> Add to planner</button>
+              </div>
+            </footer>
+          </div>
         </article>) : <div className="home-empty-destinations"><MapPinned size={30} /><strong>Destinations are being prepared</strong><p>Verified places will appear here when the tourism team publishes them.</p></div>}
       </div>
     </section>

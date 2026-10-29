@@ -31,7 +31,7 @@
 .panel-heading p,
 .itinerary-topline p,
 .empty-route p { margin: 0; color: #697977; font-size: 13px; line-height: 1.55; }
-.field-error-summary { margin: -10px 0 18px; padding: 10px; border: 1px solid #edc2b9; border-radius: 5px; color: #963a2d; background: #fff1ed; font-size: 12px; line-height: 1.4; }.field-error-summary p { margin: 2px 0; text-transform: capitalize; }
+.field-error-summary { margin: -10px 0 18px; padding: 10px; border: 1px solid #edc2b9; border-radius: 5px; color: #963a2d; background: #fff1ed; font-size: 12px; line-height: 1.4; }.field-error-summary p { margin: 2px 0; }.field-error-summary strong { text-transform: capitalize; }
 
 .form-section {
   padding: 20px 0;
@@ -103,6 +103,11 @@ input[type="date"], input[type="time"] { padding-right: 6px; }
 }
 .destination-option:hover { background: #f3f8f6; }
 .destination-option.checked { background: #eef8f4; border-color: #c9e4dc; }
+.destination-option.unavailable { border-color: #e5c6a2; background: #fffbf4; }
+.destination-option:has(input:disabled) { cursor: not-allowed; }
+.destination-option:has(input:focus-visible) { outline: 3px solid #087f7b; outline-offset: 2px; }
+.destination-availability { grid-column: 2; color: #89521c; font-size: 12px; font-weight: 500; line-height: 1.5; }
+.destination-availability svg { margin-right: 3px; }
 .destination-option input { position: absolute; opacity: 0; width: 1px; height: 1px; }
 .checkbox-visual { width: 17px; height: 17px; border: 1.5px solid #a7bbb5; border-radius: 4px; position: relative; }
 .checked .checkbox-visual { background: #087f7b; border-color: #087f7b; }

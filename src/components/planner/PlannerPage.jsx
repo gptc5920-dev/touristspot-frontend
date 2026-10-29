@@ -6,6 +6,7 @@ import {
 } from '../../fontawesome-icons'
 import { GOOGLE_MAP_EMBED_URL, GOOGLE_MAP_URL, INTERESTS } from '../../config/travel'
 import { formatEstimate, peso } from '../../lib/app'
+import { destinationUnavailableReason } from '../../lib/destinationAvailability'
 
 export default function PlannerPage({
   form,
@@ -45,7 +46,7 @@ export default function PlannerPage({
                 <h1>Build your day</h1>
                 <p>Choose what matters. We will organize only active, tourism-office verified places.</p>
               </div>
-              {Object.keys(fieldErrors).length > 0 && <div className="field-error-summary" role="alert">{Object.entries(fieldErrors).map(([field, messages]) => <p key={field}><strong>{field.replaceAll('_', ' ')}:</strong> {messages?.[0]}</p>)}</div>}
+              {Object.keys(fieldErrors).length > 0 && <div className="field-error-summary" role="alert">{Object.entries(fieldErrors).map(([field, messages]) => <p key={field}><strong>{field === 'preferred_destinations' ? 'Places to include' : field.replaceAll('_', ' ')}:</strong> {messages.join(' ')}</p>)}</div>}
     
               <section className={plannerOpenSection === 'when' ? 'form-section planner-accordion open' : 'form-section planner-accordion'}>
                 <button type="button" className="section-title planner-accordion-trigger" aria-expanded={plannerOpenSection === 'when'} onClick={() => onToggleSection('when')}><CalendarDays size={17} /><span><strong>When and where</strong><small>{form.starting_location || 'Set your date and starting point'}</small></span><ChevronDown size={17} /></button>
@@ -76,16 +77,20 @@ export default function PlannerPage({
               <section id="places" className={plannerOpenSection === 'places' ? 'form-section planner-accordion open' : 'form-section planner-accordion'}>
                 <button type="button" className="section-title planner-accordion-trigger" aria-expanded={plannerOpenSection === 'places'} onClick={() => onToggleSection('places')}><MapPin size={17} /><span><strong>Places to include</strong><small>{selectedDestinationIds.size ? `${selectedDestinationIds.size} preferred places` : 'Optional destination choices'}</small></span><ChevronDown size={17} /></button>
                 {plannerOpenSection === 'places' && <div className="planner-accordion-panel">
+                <p className="subtle">Availability is checked for your travel date. Change the date or deselect any unavailable place.</p>
                 <div className="destination-picker">
                   {loading && <p className="subtle">Loading verified destinations...</p>}
                   {!loading && !destinations.length && <p className="subtle empty-data-message">No verified destinations are available. Sign in as an administrator to add tourism-office records.</p>}
-                  {destinations.map((destination) => (
-                    <label key={destination.id} className={selectedDestinationIds.has(destination.id) ? 'destination-option checked' : 'destination-option'}>
-                      <input type="checkbox" checked={selectedDestinationIds.has(destination.id)} onChange={() => onToggleDestination(destination.id)} />
+                  {destinations.map((destination) => {
+                    const selected = selectedDestinationIds.has(destination.id)
+                    const unavailableReason = destinationUnavailableReason(destination, form.travel_date)
+                    return <label key={destination.id} className={`destination-option${selected ? ' checked' : ''}${unavailableReason ? ' unavailable' : ''}`}>
+                      <input type="checkbox" checked={selected} disabled={Boolean(unavailableReason) && !selected} aria-invalid={selected && Boolean(unavailableReason)} aria-describedby={unavailableReason ? `destination-availability-${destination.id}` : undefined} onChange={() => onToggleDestination(destination.id)} />
                       <span className="checkbox-visual" aria-hidden="true" />
                       <span className="destination-option-copy"><strong>{destination.name}</strong><small>{destination.category} · {destination.hours}</small><small className="destination-rating"><Star size={11} fill="currentColor" /> {destination.average_rating ?? 'New'}{destination.review_count ? ` (${destination.review_count})` : ' · No reviews yet'}</small><span className="destination-option-fee"><span>Entrance fee</span><b>{peso.format(Number(destination.entrance_fee || 0))}</b></span></span>
+                      {unavailableReason && <span id={`destination-availability-${destination.id}`} className="destination-availability"><CircleAlert size={13} aria-hidden="true" /> {unavailableReason}</span>}
                     </label>
-                  ))}
+                  })}
                 </div>
                 </div>}
               </section>

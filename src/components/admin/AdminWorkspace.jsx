@@ -198,7 +198,6 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     if (Object.keys(validationErrors).length) {
       setDraftErrors(validationErrors)
       setFocusErrors(validationErrors)
-      onModal({ title: 'Review destination details', message: 'Check the highlighted fields, then save again.', tone: 'warning' })
       return
     }
     setSaving(true)
@@ -219,10 +218,11 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
       const response = await apiFetch(url, { method: selectedId ? 'PATCH' : 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       const body = await readApiJson(response)
       if (!response.ok) {
-        if (body?.fields) {
+        if (body?.fields && Object.keys(body.fields).length) {
           const fieldErrors = Object.fromEntries(Object.entries(body.fields).map(([field, messages]) => [field, messages?.[0] || 'Review this field.']))
           setDraftErrors(fieldErrors)
           setFocusErrors(fieldErrors)
+          return
         }
         throw new Error(apiErrorMessage(body, 'Could not save destination.'))
       }

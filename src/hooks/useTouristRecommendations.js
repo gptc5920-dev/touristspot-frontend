@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from 'react'
 import { readApiJson, resolveDestinationMedia } from '../api'
 import { EMPTY_TOURIST_PREFERENCES } from '../config/preferences'
+import { DESTINATION_CATEGORIES } from '../config/travel'
 import { apiErrorMessage, authUserFromPayload, requestErrorMessage } from '../lib/app'
 
 function validatePreferences(preferences) {
@@ -77,7 +78,7 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
         const response = await apiFetch('/tourist/preferences/')
         const body = await readApiJson(response)
         if (!response.ok) throw new Error(apiErrorMessage(body, 'Could not load your travel preferences.'))
-        if (active) setPreferences({ ...EMPTY_TOURIST_PREFERENCES, ...body.preferences })
+        if (active) setPreferences({ ...EMPTY_TOURIST_PREFERENCES, ...body.preferences, preferred_categories: (body.preferences?.preferred_categories || []).filter((category) => DESTINATION_CATEGORIES.includes(category)) })
       } catch (requestError) {
         if (active) setError(requestErrorMessage(requestError, 'Could not load your travel preferences.'))
       } finally {
@@ -145,7 +146,7 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
     setPreferences((current) => ({
       ...current,
       selected_interests: Array.isArray(profile.interests) ? profile.interests : [],
-      preferred_categories: Array.isArray(profile.preferred_categories) ? profile.preferred_categories : [],
+      preferred_categories: Array.isArray(profile.preferred_categories) ? profile.preferred_categories.filter((category) => DESTINATION_CATEGORIES.includes(category)) : [],
       budget_min: profile.budget_min ?? '',
       budget_max: profile.budget_max ?? '',
       available_start_time: profile.available_start_time || current.available_start_time,
@@ -208,7 +209,7 @@ export default function useTouristRecommendations({ apiFetch, user, onUserChange
         setFieldErrors(Object.fromEntries(Object.entries(body.errors || {}).map(([field, messages]) => [field, Array.isArray(messages) ? messages[0] : messages])))
         throw new Error(apiErrorMessage(body, 'Could not save your travel preferences.'))
       }
-      setPreferences({ ...EMPTY_TOURIST_PREFERENCES, ...body.preferences })
+      setPreferences({ ...EMPTY_TOURIST_PREFERENCES, ...body.preferences, preferred_categories: (body.preferences?.preferred_categories || []).filter((category) => DESTINATION_CATEGORIES.includes(category)) })
       if (body.user) onUserChange(authUserFromPayload(body.user))
       const generated = await generateRecommendations({ method: 'POST' })
       if (generated) navigateTo('recommendations')

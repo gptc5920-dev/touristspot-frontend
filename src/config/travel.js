@@ -12,7 +12,7 @@ export const INTERESTS = [
 ]
 
 export const DESTINATION_CATEGORIES = [
-  'Nature & eco-tourism', 'Beach & coastal', 'Waterfall & river', 'Mountain & viewpoint',
+  'Nature & eco-tourism', 'Waterfall & river', 'Mountain & viewpoint',
   'Historical site', 'Cultural heritage', 'Religious site', 'Food & dining',
   'Adventure & recreation', 'Park & family attraction', 'Shopping & local products', 'Accommodation',
 ]
@@ -25,7 +25,6 @@ export const SAFETY_SUGGESTIONS = ['Bring drinking water', 'Wear suitable footwe
 
 export const CATEGORY_ACTIVITY_SUGGESTIONS = {
   'Nature & eco-tourism': ['Nature walk', 'Bird watching', 'Photography'],
-  'Beach & coastal': ['Swimming', 'Sunset viewing', 'Picnic'],
   'Waterfall & river': ['Swimming', 'Nature walk', 'Photography'],
   'Mountain & viewpoint': ['Hiking', 'Sightseeing', 'Photography'],
   'Historical site': ['Guided tour', 'Museum visit', 'Photography'],
@@ -60,7 +59,7 @@ export const INITIAL_PLANNER_FORM = {
 }
 
 export const EMPTY_DESTINATION = {
-  name: '', description: '', category: '', area: '', address: '', latitude: '', longitude: '',
+  name: '', description: '', categories: [], area: '', address: '', latitude: '', longitude: '',
   province_code: '', municipality_code: '', barangay_code: '',
   opening_time: '08:00', closing_time: '17:00', visit_minutes: '60', entrance_fee: '0',
   interests: [], operating_days: [], availability_start: '', availability_end: '', activities: [],

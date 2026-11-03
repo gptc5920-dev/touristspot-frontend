@@ -7,6 +7,7 @@ import {
 import { readApiJson, resolveMediaUrl } from '../../api'
 import { DESTINATION_CATEGORIES, EMPTY_DESTINATION } from '../../config/travel'
 import { apiErrorMessage, peso, requestErrorMessage } from '../../lib/app'
+import { destinationCategories, destinationCategoryLabel } from '../../lib/destinationCategories'
 import { ConfirmDialog } from '../common/Dialogs'
 import { useSiteSettings } from '../../contexts/siteSettingsState'
 import AdminDashboardOverview from './AdminDashboardOverview'
@@ -76,6 +77,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     return {
       ...EMPTY_DESTINATION,
       ...destination,
+      categories: destinationCategories(destination).filter((category) => DESTINATION_CATEGORIES.includes(category)),
       latitude: String(destination.coordinates?.[0] ?? ''),
       longitude: String(destination.coordinates?.[1] ?? ''),
       interests: Array.isArray(destination.interests) ? destination.interests : [],
@@ -164,7 +166,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     const errors = {}
     if (draft.name.trim().length < 3) errors.name = 'Enter a destination name with at least 3 characters.'
     if (records.some((item) => item.id !== selectedId && item.name.trim().toLocaleLowerCase() === draft.name.trim().toLocaleLowerCase() && item.address.trim().toLocaleLowerCase() === draft.address.trim().toLocaleLowerCase())) errors.name = 'This destination name and address already exist.'
-    if (!DESTINATION_CATEGORIES.includes(draft.category)) errors.category = 'Choose a category from the list.'
+    if (!draft.categories.length || draft.categories.some((category) => !DESTINATION_CATEGORIES.includes(category))) errors.categories = 'Choose at least one category from the list.'
     if (draft.description.trim().length < 20) errors.description = 'Add a helpful description with at least 20 characters.'
     if (!draft.interests.length) errors.interests = 'Choose at least one traveler interest.'
     if (!draft.area.trim()) errors.area = 'Enter the municipality area or barangay.'
@@ -203,7 +205,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
     setSaving(true)
     setError('')
     const payload = {
-      name: draft.name, description: draft.description, category: draft.category, area: draft.area, address: draft.address,
+      name: draft.name, description: draft.description, categories: draft.categories, area: draft.area, address: draft.address,
       province_code: draft.province_code, municipality_code: draft.municipality_code, barangay_code: draft.barangay_code,
       latitude: draft.latitude, longitude: draft.longitude, opening_time: draft.opening_time, closing_time: draft.closing_time, visit_minutes: draft.visit_minutes,
       entrance_fee: draft.entrance_fee, interests: draft.interests, operating_days: draft.operating_days,
@@ -377,7 +379,7 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
         <button type="button" className="admin-records-backdrop" aria-label="Close destination records" onClick={() => setRecordsDrawerOpen(false)} />
         <aside className="admin-destination-list" aria-label="Destination records">
           <div className="admin-list-heading"><div><span className="eyebrow"><MapPinned size={14} /> Destination records</span><strong>{records.length} places</strong></div><div className="admin-list-heading-actions"><button type="button" title="Add destination" onClick={startNewDestination}><Plus size={16} /></button><button type="button" title="Close destination records" onClick={() => setRecordsDrawerOpen(false)}><X size={16} /></button></div></div>
-          {loading ? <div className="admin-list-loading"><RefreshCw className="spin" size={18} /> Loading records</div> : records.length ? records.map((destination) => <button key={destination.id} type="button" onClick={() => selectDestination(destination)} className={selectedId === destination.id ? 'admin-list-item active' : 'admin-list-item'}><span className="record-image">{destination.image_url ? <img src={destination.image_url} alt="" /> : <MapPin size={17} />}</span><span><strong>{destination.name}</strong><small>{destination.category} · {destination.area}</small><small className="record-entrance-fee">Entrance fee · {peso.format(Number(destination.entrance_fee || 0))}</small><em className={destination.is_active && destination.is_verified ? 'record-status ready' : 'record-status'}>{destination.is_active ? destination.is_verified ? 'Verified' : 'Pending verification' : 'Unavailable'}</em></span></button>) : <div className="admin-list-empty"><MapPinned size={24} /><strong>No destinations yet</strong><span>Add the first tourism-office record.</span><button type="button" onClick={startNewDestination}>Add destination</button></div>}
+          {loading ? <div className="admin-list-loading"><RefreshCw className="spin" size={18} /> Loading records</div> : records.length ? records.map((destination) => <button key={destination.id} type="button" onClick={() => selectDestination(destination)} className={selectedId === destination.id ? 'admin-list-item active' : 'admin-list-item'}><span className="record-image">{destination.image_url ? <img src={destination.image_url} alt="" /> : <MapPin size={17} />}</span><span><strong>{destination.name}</strong><small>{destinationCategoryLabel(destination)} · {destination.area}</small><small className="record-entrance-fee">Entrance fee · {peso.format(Number(destination.entrance_fee || 0))}</small><em className={destination.is_active && destination.is_verified ? 'record-status ready' : 'record-status'}>{destination.is_active ? destination.is_verified ? 'Verified' : 'Pending verification' : 'Unavailable'}</em></span></button>) : <div className="admin-list-empty"><MapPinned size={24} /><strong>No destinations yet</strong><span>Add the first tourism-office record.</span><button type="button" onClick={startNewDestination}>Add destination</button></div>}
         </aside>
 
         <DestinationEditor

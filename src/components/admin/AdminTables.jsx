@@ -4,6 +4,7 @@ import {
   Trash2, UserRound, Users,
 } from '../../fontawesome-icons'
 import { peso } from '../../lib/app'
+import { destinationCategories, destinationCategoryLabel } from '../../lib/destinationCategories'
 
 export function UsersTable({ users: userRecords, loading }) {
   const [query, setQuery] = useState('')
@@ -68,16 +69,16 @@ export function DestinationTable({ records, loading, onEdit, onDelete, onAdd }) 
   const [query, setQuery] = useState('')
   const [status, setStatus] = useState('all')
   const [category, setCategory] = useState('all')
-  const categories = useMemo(() => [...new Set(records.map((item) => item.category).filter(Boolean))].sort(), [records])
+  const categories = useMemo(() => [...new Set(records.flatMap(destinationCategories))].sort(), [records])
   const filteredRecords = useMemo(() => {
     const searchTerm = query.trim().toLowerCase()
     return records.filter((destination) => {
       const destinationStatus = !destination.is_active ? 'inactive' : destination.is_verified ? 'ready' : 'pending'
-      const matchesSearch = !searchTerm || [destination.name, destination.category, destination.area, destination.address]
+      const matchesSearch = !searchTerm || [destination.name, ...destinationCategories(destination), destination.area, destination.address]
         .some((value) => String(value || '').toLowerCase().includes(searchTerm))
       return matchesSearch
         && (status === 'all' || status === destinationStatus)
-        && (category === 'all' || category === destination.category)
+        && (category === 'all' || destinationCategories(destination).includes(category))
     })
   }, [category, query, records, status])
 
@@ -110,7 +111,7 @@ export function DestinationTable({ records, loading, onEdit, onDelete, onAdd }) 
             const statusLabel = statusKey === 'ready' ? 'Verified' : statusKey === 'pending' ? 'Pending' : 'Unavailable'
             return <tr key={destination.id}>
               <td><div className="table-destination-cell"><span>{destination.image_url ? <img src={destination.image_url} alt="" /> : <MapPin size={17} />}</span><div><strong>{destination.name}</strong><small>{destination.area || 'Area not provided'}</small><small title={destination.address}>{destination.address}</small></div></div></td>
-              <td><span className="table-category">{destination.category}</span></td>
+              <td><span className="table-category">{destinationCategoryLabel(destination)}</span></td>
               <td><strong className="table-hours">{destination.hours}</strong><small className="table-days">{destination.operating_days?.length || 0} operating days</small></td>
               <td><strong className="table-fee">{peso.format(Number(destination.entrance_fee || 0))}</strong></td>
               <td>{destination.review_count ? <span className="table-rating"><Star size={14} fill="currentColor" /><strong>{destination.average_rating}</strong><small>{destination.review_count} review{destination.review_count === 1 ? '' : 's'}</small></span> : <span className="table-no-rating">No reviews</span>}</td>

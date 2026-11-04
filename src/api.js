@@ -10,7 +10,11 @@ export function resolveMediaUrl(url) {
 }
 
 export function resolveDestinationMedia(destination) {
-  return { ...destination, image_url: resolveMediaUrl(destination.image_url) }
+  return {
+    ...destination,
+    image_url: resolveMediaUrl(destination.image_url),
+    supporting_photos: (destination.supporting_photos || []).map((photo) => ({ ...photo, image_url: resolveMediaUrl(photo.image_url) })),
+  }
 }
 
 export function resolveItineraryMedia(itinerary) {

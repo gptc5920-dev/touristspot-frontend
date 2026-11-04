@@ -12,9 +12,9 @@ export const INTERESTS = [
 ]
 
 export const DESTINATION_CATEGORIES = [
-  'Nature & eco-tourism', 'Waterfall & river', 'Mountain & viewpoint',
+  'Nature & eco-tourism', 'Waterfall & river', 'Pool', 'Mountain & viewpoint',
   'Historical site', 'Cultural heritage', 'Religious site', 'Food & dining',
-  'Adventure & recreation', 'Park & family attraction', 'Shopping & local products', 'Accommodation',
+  'Adventure & recreation', 'Park & family attraction', 'Shopping & local products', 'Accommodation', 'Food & Accommodation',
 ]
 
 export const OPERATING_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
@@ -26,6 +26,7 @@ export const SAFETY_SUGGESTIONS = ['Bring drinking water', 'Wear suitable footwe
 export const CATEGORY_ACTIVITY_SUGGESTIONS = {
   'Nature & eco-tourism': ['Nature walk', 'Bird watching', 'Photography'],
   'Waterfall & river': ['Swimming', 'Nature walk', 'Photography'],
+  Pool: ['Swimming', 'Relaxation', 'Group activity'],
   'Mountain & viewpoint': ['Hiking', 'Sightseeing', 'Photography'],
   'Historical site': ['Guided tour', 'Museum visit', 'Photography'],
   'Cultural heritage': ['Cultural tour', 'Local crafts', 'Community visit'],
@@ -35,6 +36,14 @@ export const CATEGORY_ACTIVITY_SUGGESTIONS = {
   'Park & family attraction': ['Picnic', 'Children activities', 'Sightseeing'],
   'Shopping & local products': ['Souvenir shopping', 'Local crafts', 'Market visit'],
   Accommodation: ['Overnight stay', 'Dining', 'Relaxation'],
+  'Food & Accommodation': ['Local dining', 'Food tasting', 'Overnight stay', 'Relaxation'],
+}
+
+export function suggestedDestinationActivities(categories, selectedActivities = []) {
+  const suggestions = categories.length
+    ? categories.flatMap((category) => CATEGORY_ACTIVITY_SUGGESTIONS[category] || [])
+    : ['Sightseeing', 'Photography', 'Guided tour']
+  return [...new Set([...suggestions, 'Camping', ...selectedActivities])]
 }
 
 export const GOOGLE_MAP_URL = 'https://www.google.com/maps/place/Sergio+Osmena+Sr.,+Zamboanga+del+Norte/@8.2977209,123.3056737,12z/data=!3m1!4b1!4m6!3m5!1s0x325461ec27145fa3:0x2fc627c16640faa1!8m2!3d8.3000946!4d123.5059025!16zL20vMDZudG5w?entry=ttu&g_ep=EgoyMDI2MDgwMi4wIKXMDSoASAFQAw%3D%3D'

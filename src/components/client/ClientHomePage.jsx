@@ -1,4 +1,5 @@
-import { destinationCategories, destinationCategoryLabel } from '../../lib/destinationCategories'
+import { destinationCategories } from '../../lib/destinationCategories'
+import DestinationCategoryTags from '../common/DestinationCategoryTags'
 import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight, BadgeCheck, CalendarDays, Compass, ChevronLeft, ChevronRight, MapPin, MapPinned,
@@ -100,11 +101,12 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
     </section>
 
     <section id="featured-destinations" className="home-section home-destinations">
-      <header className="home-section-heading"><div><span className="home-kicker"><MapPinned size={15} /> Discover locally</span><h2>Places worth adding to your day</h2><p>Explore active, verified destinations before adding them to your personalized itinerary.</p></div><button type="button" className="home-text-action" onClick={() => onPlan()}><span>Open all in planner</span><ArrowRight size={16} /></button></header>
+      <header className="home-section-heading"><div><span className="home-kicker"><MapPinned size={15} /> Discover locally</span><h2>Places worth adding to your day</h2><p>Explore active, verified destinations before adding them to your personalized itinerary.</p></div><button type="button" className="home-text-action" onClick={onDiscover}><span>View all destinations</span><ArrowRight size={16} /></button></header>
       <div className="home-destination-grid">
         {loading ? [1, 2, 3].map((item) => <div key={item} className="home-destination-skeleton" />) : error ? <div className="home-empty-destinations" role="alert"><strong>Unable to load destinations</strong><p>Please try again to see verified places.</p><button type="button" className="home-primary-action" onClick={onRetry}>Retry</button></div> : previewDestinations.length ? previewDestinations.map((destination) => <article key={destination.id} className="home-destination-card">
-          <div className="home-destination-image"><DestinationThumbnail destination={destination} iconSize={28} placeholderLabel="Photo unavailable" /><em>{destinationCategoryLabel(destination)}</em></div>
+          <div className="home-destination-image"><DestinationThumbnail destination={destination} iconSize={28} placeholderLabel="Photo unavailable" /></div>
           <div className="home-destination-content">
+            <DestinationCategoryTags destination={destination} />
             <div className="home-destination-rating"><Star size={14} aria-hidden="true" /><span>{destination.average_rating ?? 'New'}</span><small>{destination.review_count ? `${destination.review_count} review${destination.review_count === 1 ? '' : 's'}` : 'No reviews yet'}</small></div>
             <h3>{destination.name}</h3>
             <p>{destination.description}</p>

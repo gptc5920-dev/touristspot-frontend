@@ -4,7 +4,7 @@ import {
   ListChecks, LogOut, MapPin, MapPinned, Menu, Navigation, PanelLeftClose,
   PanelLeftOpen, Plus, RefreshCw, Settings2, Users, X,
 } from '../../fontawesome-icons'
-import { readApiJson, resolveMediaUrl } from '../../api'
+import { readApiJson, resolveDestinationMedia } from '../../api'
 import { DESTINATION_CATEGORIES, EMPTY_DESTINATION } from '../../config/travel'
 import { apiErrorMessage, peso, requestErrorMessage } from '../../lib/app'
 import { destinationCategories, destinationCategoryLabel } from '../../lib/destinationCategories'
@@ -15,7 +15,7 @@ import AdminSettings from './AdminSettings'
 import { DestinationTable, UsersTable } from './AdminTables'
 import DestinationEditor from './DestinationEditor'
 
-const withMediaUrl = (destination) => ({ ...destination, image_url: resolveMediaUrl(destination.image_url) })
+const withMediaUrl = resolveDestinationMedia
 
 export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
   const { settings } = useSiteSettings()
@@ -395,6 +395,10 @@ export default function AdminWorkspace({ apiFetch, user, onLogout, onModal }) {
           onChange={changeDraft}
           onChooseImage={chooseImage}
           onRemoveImage={removeSavedImage}
+          onPhotosChange={(destinationId, photos) => {
+            setRecords((current) => current.map((item) => item.id === destinationId ? { ...item, supporting_photos: photos } : item))
+            setDraft((current) => current.id === destinationId ? { ...current, supporting_photos: photos } : current)
+          }}
           onDelete={() => requestDestinationDelete(records.find((item) => item.id === selectedId) || { id: selectedId, name: draft.name })}
           onSubmit={saveDestination}
           onToggleList={toggleDraftList}

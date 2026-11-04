@@ -1,5 +1,9 @@
 const REMOVED_CATEGORY = 'Beach & coastal'
 
+export function destinationCategoryName(category) {
+  return category === 'Mountain & viewpoint' ? 'Mountain View' : category
+}
+
 export function destinationCategories(destination) {
   const values = Array.isArray(destination.categories) && destination.categories.length
     ? destination.categories
@@ -8,5 +12,5 @@ export function destinationCategories(destination) {
 }
 
 export function destinationCategoryLabel(destination) {
-  return destinationCategories(destination).join(' · ')
+  return destinationCategories(destination).map(destinationCategoryName).join(' · ')
 }

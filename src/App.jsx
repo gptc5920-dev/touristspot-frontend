@@ -78,7 +78,7 @@ function App() {
   }
 
   function showDiscover() {
-    navigateTo('discover')
+    navigateTo('discover', { resetDiscoverFilters: true })
   }
 
   const isAdminRoute = view === 'admin'

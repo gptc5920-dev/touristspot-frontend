@@ -2,7 +2,7 @@ import DestinationImage from '../common/DestinationImage'
 import DestinationDetailsDialog from '../recommendations/DestinationDetailsDialog'
 import useDiscoverFilters from '../../hooks/useDiscoverFilters'
 import { peso } from '../../lib/app'
-import { destinationCategories } from '../../lib/destinationCategories'
+import { destinationCategories, destinationCategoryLabel } from '../../lib/destinationCategories'
 import { useEffect, useMemo, useState } from 'react'
 import { Bookmark, MapPin, MapPinned, Plus, Search, SlidersHorizontal, Star, X } from '../../fontawesome-icons'
 import { GOOGLE_MAP_URL } from '../../config/travel'
@@ -12,7 +12,9 @@ const SAVED_KEY = 'travel-osmena-discover-saved'
 const CATEGORY_DETAILS = {
   'Nature & eco-tourism': ['🌿', 'Eco-Tourism'],
   'Waterfall & river': ['🌊', 'Waterfalls'],
-  'Mountain & viewpoint': ['⛰️', 'Highlands & Viewpoints'],
+  'Mountain & viewpoint': ['⛰️', 'Mountain View'],
+  Pool: ['🏊', 'Pool'],
+  'Food & Accommodation': ['🏡', 'Food & Accommodation'],
   'Historical site': ['🏛️', 'Historical Sites'],
   'Cultural heritage': ['🎭', 'Cultural Heritage'],
   'Religious site': ['⛪', 'Faith & Heritage'],
@@ -60,7 +62,7 @@ export default function ClientDiscoverPage({ destinations, loading, error, onRet
   const visibleDestinations = useMemo(() => {
     const text = searchTerm.toLocaleLowerCase()
     return destinations.filter((item) => {
-      const matchesSearch = !text || [item.name, ...destinationCategories(item), item.area, item.address, item.description]
+      const matchesSearch = !text || [item.name, ...destinationCategories(item), destinationCategoryLabel(item), item.area, item.address, item.description]
         .some((value) => String(value || '').toLocaleLowerCase().includes(text))
       return matchesSearch && (!selectedCategories.length || destinationCategories(item).some((category) => selectedCategories.includes(category)))
         && (!freeOnly || Number(item.entrance_fee || 0) === 0)
@@ -117,7 +119,7 @@ export default function ClientDiscoverPage({ destinations, loading, error, onRet
             : error && !destinations.length ? null : visibleDestinations.length ? visibleDestinations.map((destination) => {
               const saved = savedIds.includes(String(destination.id))
               return <article className="discover-card" key={destination.id}>
-                <div className="discover-card-image"><DestinationImage destination={destination} />
+                <div className="discover-card-image"><button type="button" className="discover-photo-trigger" aria-label={`View photos and details for ${destination.name}`} onClick={() => setDetails(destination)}><DestinationImage destination={destination} /><span>View photos & details</span></button>
                   <button type="button" className={`discover-bookmark ${saved ? 'saved' : ''}`} aria-pressed={saved} aria-label={`${saved ? 'Remove' : 'Save'} ${destination.name}${saved ? ' from saved places' : ' to saved places'}`} onClick={() => toggleSaved(destination.id)}><Bookmark size={15} /></button>
                   <button type="button" className="discover-add" onClick={() => onPlan(destination.id)}><Plus size={12} /> Add to itinerary</button>
                 </div>

@@ -7,9 +7,10 @@ export default function useNavigation() {
 
   const discoverSearch = useRef(viewFromPath(window.location.pathname) === 'discover' ? window.location.search : '')
 
-  const navigateTo = useCallback((nextView, { replace = false } = {}) => {
+  const navigateTo = useCallback((nextView, { replace = false, resetDiscoverFilters = false } = {}) => {
     const resolvedView = Object.hasOwn(ROUTES, nextView) ? nextView : 'home'
     if (viewFromPath(window.location.pathname) === 'discover') discoverSearch.current = window.location.search
+    if (resolvedView === 'discover' && resetDiscoverFilters) discoverSearch.current = ''
     const path = ROUTES[resolvedView] + (resolvedView === 'discover' ? discoverSearch.current : '')
     setView(resolvedView)
     if (`${window.location.pathname}${window.location.search}` !== path) {

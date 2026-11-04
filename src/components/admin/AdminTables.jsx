@@ -4,7 +4,7 @@ import {
   Trash2, UserRound, Users,
 } from '../../fontawesome-icons'
 import { peso } from '../../lib/app'
-import { destinationCategories, destinationCategoryLabel } from '../../lib/destinationCategories'
+import { destinationCategories, destinationCategoryName, destinationCategoryLabel } from '../../lib/destinationCategories'
 
 export function UsersTable({ users: userRecords, loading }) {
   const [query, setQuery] = useState('')
@@ -99,7 +99,7 @@ export function DestinationTable({ records, loading, onEdit, onDelete, onAdd }) 
     <div className="admin-table-toolbar">
       <label className="admin-table-search"><Search size={16} /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search name, area, category, or address" aria-label="Search destinations" /></label>
       <label><span>Status</span><select value={status} onChange={(event) => setStatus(event.target.value)}><option value="all">All statuses</option><option value="ready">Verified</option><option value="pending">Pending verification</option><option value="inactive">Unavailable</option></select></label>
-      <label><span>Category</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">All categories</option>{categories.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
+      <label><span>Category</span><select value={category} onChange={(event) => setCategory(event.target.value)}><option value="all">All categories</option>{categories.map((item) => <option key={item} value={item}>{destinationCategoryName(item)}</option>)}</select></label>
     </div>
     {filteredRecords.length ? <>
       <div className="admin-table-scroll" role="region" aria-label="Tourism destinations table" tabIndex="0">

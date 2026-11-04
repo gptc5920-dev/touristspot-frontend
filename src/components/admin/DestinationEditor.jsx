@@ -4,12 +4,14 @@ import {
   Link2, MapPin, MapPinned, RefreshCw, Save, ShieldCheck, Sparkles, Trash2, Upload,
 } from '../../fontawesome-icons'
 import {
-  ACCESSIBILITY_SUGGESTIONS, CATEGORY_ACTIVITY_SUGGESTIONS, COMPANION_SUGGESTIONS,
+  ACCESSIBILITY_SUGGESTIONS, suggestedDestinationActivities, COMPANION_SUGGESTIONS,
   DESTINATION_CATEGORIES, INTERESTS, OPERATING_DAYS, SAFETY_SUGGESTIONS,
   TRANSPORT_SUGGESTIONS,
 } from '../../config/travel'
 import LocationMapModal from '../common/LocationMapModal'
 import LocationFields from './LocationFields'
+import DestinationPhotoEditor from './DestinationPhotoEditor'
+import { destinationCategoryName } from '../../lib/destinationCategories'
 
 function FieldError({ field, errors }) {
   if (!errors[field]) return null
@@ -28,12 +30,10 @@ function DestinationSection({ sectionId, title, description, icon, complete, opt
   </section>
 }
 
-export default function DestinationEditor({ apiFetch, dashboard, draft, errors, focusErrors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onDelete, onSubmit, onToggleList }) {
+export default function DestinationEditor({ apiFetch, dashboard, draft, errors, focusErrors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onPhotosChange, onDelete, onSubmit, onToggleList }) {
   const [showMapModal, setShowMapModal] = useState(false)
   const formRef = useRef(null)
-  const activitySuggestions = draft.categories.length
-    ? [...new Set(draft.categories.flatMap((category) => CATEGORY_ACTIVITY_SUGGESTIONS[category] || []))]
-    : ['Sightseeing', 'Photography', 'Guided tour']
+  const activitySuggestions = suggestedDestinationActivities(draft.categories, draft.activities)
   const pendingImagePreview = useMemo(() => pendingImage ? URL.createObjectURL(pendingImage) : '', [pendingImage])
   const coverPreview = pendingImagePreview || draft.saved_image_url || draft.image_url
   const requiredChecks = [
@@ -99,7 +99,7 @@ export default function DestinationEditor({ apiFetch, dashboard, draft, errors, 
     <form ref={formRef} id="destination-form" className="destination-form destination-open-form" onSubmit={onSubmit} noValidate>
       <DestinationSection sectionId="basic" title="Basic information" description="Visitor-facing name, category, description, and interests" icon={<Info size={17} />} complete={sectionCompletion.basic}>
         <label>Destination name <b>*</b><input className={invalidClass('name')} aria-invalid={Boolean(errors.name)} aria-describedby={errors.name ? 'name-error' : undefined} value={draft.name} maxLength="180" onChange={(event) => onChange('name', event.target.value)} placeholder="e.g. Osmeña Heritage Park" autoComplete="off" /><FieldError field="name" errors={errors} /></label>
-        <fieldset tabIndex={errors.categories ? -1 : undefined} className={errors.categories ? 'choice-fieldset invalid' : 'choice-fieldset'} aria-invalid={Boolean(errors.categories)} aria-describedby={errors.categories ? 'categories-help categories-error' : 'categories-help'}><legend>Categories <b>*</b></legend><p id="categories-help">Select one or more categories that describe this place.</p><div className="choice-chips">{DESTINATION_CATEGORIES.map((category) => <button key={category} type="button" className={draft.categories.includes(category) ? 'selected' : ''} aria-pressed={draft.categories.includes(category)} onClick={() => onToggleList('categories', category)}>{draft.categories.includes(category) && <Check size={13} />}{category}</button>)}</div><FieldError field="categories" errors={errors} /></fieldset>
+        <fieldset tabIndex={errors.categories ? -1 : undefined} className={errors.categories ? 'choice-fieldset invalid' : 'choice-fieldset'} aria-invalid={Boolean(errors.categories)} aria-describedby={errors.categories ? 'categories-help categories-error' : 'categories-help'}><legend>Categories <b>*</b></legend><p id="categories-help">Select one or more categories that describe this place.</p><div className="choice-chips">{DESTINATION_CATEGORIES.map((category) => <button key={category} type="button" className={draft.categories.includes(category) ? 'selected' : ''} aria-pressed={draft.categories.includes(category)} onClick={() => onToggleList('categories', category)}>{draft.categories.includes(category) && <Check size={13} />}{destinationCategoryName(category)}</button>)}</div><FieldError field="categories" errors={errors} /></fieldset>
         <label className="wide-label">Description <b>*</b><textarea className={invalidClass('description')} aria-invalid={Boolean(errors.description)} value={draft.description} maxLength="1200" onChange={(event) => onChange('description', event.target.value)} placeholder="Describe what visitors will experience, what makes the place special, and any important context." /><span className="field-meta"><span>Suggestion: mention the main attraction and ideal visitor experience.</span><strong>{draft.description.length}/1200</strong></span><FieldError field="description" errors={errors} /></label>
         <fieldset tabIndex={errors.interests ? -1 : undefined} className={errors.interests ? 'choice-fieldset invalid' : 'choice-fieldset'}><legend>Traveler interests <b>*</b></legend><p>Select every interest that accurately describes this place.</p><div className="choice-chips">{INTERESTS.map(([value, label]) => <button key={value} type="button" className={draft.interests.includes(value) ? 'selected' : ''} aria-pressed={draft.interests.includes(value)} onClick={() => onToggleList('interests', value)}>{draft.interests.includes(value) && <Check size={13} />}{label}</button>)}</div><FieldError field="interests" errors={errors} /></fieldset>
       </DestinationSection>
@@ -133,7 +133,7 @@ export default function DestinationEditor({ apiFetch, dashboard, draft, errors, 
       </DestinationSection>
 
       <DestinationSection sectionId="experience" title="Visitor experience" description="Activities, transportation, accessibility, contacts, and advisories" icon={<Sparkles size={17} />} complete={sectionCompletion.experience} optional>
-        <fieldset className="choice-fieldset"><legend>Suggested activities</legend><p>Suggestions adapt to the selected categories.</p><div className="choice-chips">{activitySuggestions.map((activity) => <button key={activity} type="button" className={draft.activities.includes(activity) ? 'selected' : ''} aria-pressed={draft.activities.includes(activity)} onClick={() => onToggleList('activities', activity)}>{draft.activities.includes(activity) && <Check size={13} />}{activity}</button>)}</div></fieldset>
+        <fieldset className="choice-fieldset"><legend>Suggested activities</legend><p>Select all activities visitors can enjoy. Camping is available for every category.</p><div className="choice-chips">{activitySuggestions.map((activity) => <button key={activity} type="button" className={draft.activities.includes(activity) ? 'selected' : ''} aria-pressed={draft.activities.includes(activity)} onClick={() => onToggleList('activities', activity)}>{draft.activities.includes(activity) && <Check size={13} />}{activity}</button>)}</div></fieldset>
         <fieldset className="choice-fieldset"><legend>Transportation options</legend><div className="choice-chips">{TRANSPORT_SUGGESTIONS.map((option) => <button key={option} type="button" className={draft.transportation_options.includes(option) ? 'selected' : ''} aria-pressed={draft.transportation_options.includes(option)} onClick={() => onToggleList('transportation_options', option)}>{option}</button>)}</div></fieldset>
         <fieldset className="choice-fieldset"><legend>Recommended for</legend><div className="choice-chips">{COMPANION_SUGGESTIONS.map((option) => <button key={option} type="button" className={draft.recommended_companions.includes(option) ? 'selected' : ''} aria-pressed={draft.recommended_companions.includes(option)} onClick={() => onToggleList('recommended_companions', option)}>{option}</button>)}</div></fieldset>
         <label className="wide-label">Accessibility details <small>Optional</small><input value={draft.accessibility} maxLength="255" onChange={(event) => onChange('accessibility', event.target.value)} placeholder="Describe accessible entrances, paths, restrooms, or assistance." /><div className="field-presets wrap">{ACCESSIBILITY_SUGGESTIONS.map((option) => <button type="button" className={hasTextSuggestion('accessibility', option) ? 'selected' : ''} key={option} onClick={() => toggleTextSuggestion('accessibility', option)}>{option}</button>)}</div></label>
@@ -151,6 +151,10 @@ export default function DestinationEditor({ apiFetch, dashboard, draft, errors, 
           </div>
           <div className="media-url-field"><span className="media-or">or</span><label>External image URL <small>Optional fallback</small><span className="input-with-leading-icon"><Link2 size={16} /><input className={invalidClass('image_url')} aria-invalid={Boolean(errors.image_url)} type="url" value={draft.image_url} onChange={(event) => onChange('image_url', event.target.value)} placeholder="https://example.com/destination.jpg" /></span><FieldError field="image_url" errors={errors} /></label><p>Use an official, stable HTTPS image link. An uploaded image takes priority.</p></div>
         </div>
+      </DestinationSection>
+
+      <DestinationSection sectionId="photos" title="Supporting tourist photos" description="Six additional photos shown when visitors open this destination" icon={<ImagePlus size={17} />} complete={draft.supporting_photos?.length === 6} optional>
+        <DestinationPhotoEditor key={selectedId || 'new'} apiFetch={apiFetch} destinationId={selectedId} photos={draft.supporting_photos || []} disabled={saving} onChange={onPhotosChange} />
       </DestinationSection>
 
       <DestinationSection sectionId="publishing" title="Publishing status" description="Availability and tourism-office verification" icon={<ShieldCheck size={17} />} complete={sectionCompletion.publishing}>

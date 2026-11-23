@@ -127,7 +127,11 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
 
     <section className="home-section home-how-it-works">
       <header className="home-section-heading centered"><div><span className="home-kicker"><SlidersHorizontal size={15} /> Simple planning</span><h2>From preferences to a complete day</h2><p>Three quick steps turn your travel choices into a useful local route.</p></div></header>
-      <div className="home-steps"><article><span>01</span><div><CalendarDays size={20} /><h3>Set your trip</h3><p>Choose your date, starting point, available hours, and group size.</p></div></article><article><span>02</span><div><Sparkles size={20} /><h3>Tell us what matters</h3><p>Add interests, budget, accessibility needs, pace, and transportation.</p></div></article><article><span>03</span><div><Route size={20} /><h3>Follow your route</h3><p>Receive a timed itinerary with verified stops, costs, and alternatives.</p></div></article></div>
+      <ol className="home-steps">
+        <li><article><div className="home-step-top"><span className="home-step-icon"><CalendarDays size={21} aria-hidden="true" /></span><span className="home-step-number">Step 01</span></div><h3>Set your trip</h3><p>Choose your date, starting point, available hours, and group size.</p></article></li>
+        <li><article><div className="home-step-top"><span className="home-step-icon"><Sparkles size={21} aria-hidden="true" /></span><span className="home-step-number">Step 02</span></div><h3>Tell us what matters</h3><p>Add interests, budget, accessibility needs, pace, and transportation.</p></article></li>
+        <li><article><div className="home-step-top"><span className="home-step-icon"><Route size={21} aria-hidden="true" /></span><span className="home-step-number">Step 03</span></div><h3>Follow your route</h3><p>Receive a timed itinerary with verified stops, costs, and alternatives.</p></article></li>
+      </ol>
     </section>
 
     <section className="home-cta"><div><span className="home-kicker"><Navigation size={15} /> Ready when you are</span><h2>Make your next day out feel effortless.</h2><p>Start with your preferences and let {settings.site_name} organize the details.</p></div><button type="button" className="home-primary-action" onClick={() => onPlan()}><WandSparkles size={18} /> Start planning <ArrowRight size={17} /></button></section>

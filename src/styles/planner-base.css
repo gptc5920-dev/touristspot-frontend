@@ -239,3 +239,6 @@ input[type="range"] { height: 26px; padding: 0; accent-color: #087f7b; border: 0
 .route-loading, .empty-route { min-height: 420px; display: grid; place-content: center; justify-items: center; gap: 8px; border: 1px dashed #c4d5cf; color: #6c807d; text-align: center; }.route-loading { grid-auto-flow: column; min-height: 260px; }.empty-route svg { color: #0c8e84; }.empty-route h3 { font-size: 19px; }
 .spin { animation: spin 1s linear infinite; }@keyframes spin { to { transform: rotate(360deg); } }
 
+
+.google-map-link { display: flex; min-height: 100px; align-items: center; justify-content: center; gap: 10px; padding: 20px; color: #1048a7; background: #eaf1fc; font-weight: 700; text-decoration: none; }
+.google-map-link:hover { color: #092f72; background: #dce8fb; text-decoration: underline; }

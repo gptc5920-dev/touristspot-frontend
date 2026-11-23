@@ -1,5 +1,6 @@
 import { destinationCategories } from '../../lib/destinationCategories'
 import DestinationCategoryTags from '../common/DestinationCategoryTags'
+import DestinationDetailsDialog from '../recommendations/DestinationDetailsDialog'
 import { useEffect, useMemo, useState } from 'react'
 import {
   ArrowRight, BadgeCheck, CalendarDays, Compass, ChevronLeft, ChevronRight, MapPin, MapPinned,
@@ -31,6 +32,7 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
     })
     .slice(0, 3), [destinations])
   const [activeSlide, setActiveSlide] = useState(0)
+  const [details, setDetails] = useState(null)
   const [carouselPaused, setCarouselPaused] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(() => window.matchMedia('(prefers-reduced-motion: reduce)').matches)
   useEffect(() => {
@@ -108,7 +110,7 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
           <div className="home-destination-content">
             <DestinationCategoryTags destination={destination} />
             <div className="home-destination-rating"><Star size={14} aria-hidden="true" /><span>{destination.average_rating ?? 'New'}</span><small>{destination.review_count ? `${destination.review_count} review${destination.review_count === 1 ? '' : 's'}` : 'No reviews yet'}</small></div>
-            <h3>{destination.name}</h3>
+            <h3><button type="button" className="home-destination-details" onClick={() => setDetails(destination)} aria-label={`View details for ${destination.name}`}>{destination.name}</button></h3>
             <p>{destination.description}</p>
             <span className="home-destination-address"><MapPin size={14} aria-hidden="true" /><span>{destination.area || destination.address || 'Location not listed'}</span></span>
             <footer>
@@ -130,6 +132,7 @@ export default function ClientHomePage({ destinations, loading, error, onRetry, 
 
     <section className="home-cta"><div><span className="home-kicker"><Navigation size={15} /> Ready when you are</span><h2>Make your next day out feel effortless.</h2><p>Start with your preferences and let {settings.site_name} organize the details.</p></div><button type="button" className="home-primary-action" onClick={() => onPlan()}><WandSparkles size={18} /> Start planning <ArrowRight size={17} /></button></section>
 
+    {details && <DestinationDetailsDialog destination={details} onClose={() => setDetails(null)} onAdd={(destination) => { setDetails(null); onPlan(destination.id) }} />}
     <footer className="client-home-footer"><a href="/" className="brand"><span className="brand-mark">{settings.logo_url ? <img className="h-full w-full object-contain" src={settings.logo_url} alt="" /> : <Navigation size={19} />}</span><span>{settings.site_name}</span></a><p>Verified local information from {settings.organization_name} for thoughtful travel in {settings.municipality_name}.</p>{(settings.support_email || settings.support_phone) && <p>{settings.support_email}{settings.support_email && settings.support_phone ? ' · ' : ''}{settings.support_phone}</p>}<span>Plan responsibly. Confirm advisories before traveling.</span></footer>
   </main>
 }

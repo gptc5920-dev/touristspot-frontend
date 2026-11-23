@@ -5,7 +5,7 @@ import {
   Printer, RefreshCw, Route, Save, Sparkles, Star, Trash2, Users, Utensils,
   WandSparkles,
 } from '../../fontawesome-icons'
-import { GOOGLE_MAP_EMBED_URL, GOOGLE_MAP_URL, INTERESTS } from '../../config/travel'
+import { GOOGLE_MAP_URL, INTERESTS } from '../../config/travel'
 import { formatEstimate, peso } from '../../lib/app'
 import { destinationUnavailableReason } from '../../lib/destinationAvailability'
 
@@ -165,7 +165,7 @@ export default function PlannerPage({
     
                   <aside className="map-and-budget">
                     <div className="map-card">
-                      <div className="map-header"><div><span className="eyebrow"><MapPin size={14} /> Live municipality map</span><strong>Sergio Osmeña Sr., Zamboanga del Norte</strong></div><a className="icon-button" title="Open in Google Maps" href={GOOGLE_MAP_URL} target="_blank" rel="noreferrer"><Navigation size={17} /></a></div>
+                      <div className="map-header"><div><span className="eyebrow"><MapPin size={14} /> Municipality map</span><strong>Sergio Osmeña Sr., Zamboanga del Norte</strong></div><a className="icon-button" title="Open in Google Maps" href={GOOGLE_MAP_URL}><Navigation size={17} /></a></div>
                       <div className="google-map-surface"><iframe title="Google Map of Sergio Osmeña Sr., Zamboanga del Norte" src={GOOGLE_MAP_EMBED_URL} loading="lazy" referrerPolicy="no-referrer-when-downgrade" /></div>
                       <p className="map-caption"><MapPin size={14} /> Centered on the official municipality location supplied for Sergio Osmeña Sr.</p>
                     </div>

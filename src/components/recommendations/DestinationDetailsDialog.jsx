@@ -64,7 +64,7 @@ export default function DestinationDetailsDialog({ destination, onClose, onAdd }
           {destination.estimated_travel_time && <Detail label="Estimated travel time">{destination.estimated_travel_time}</Detail>}
         </dl></section>
         {destination.advisory && <div className="destination-detail-advisory"><strong>Tourism advisory</strong><p>{destination.advisory}</p></div>}
-        <div className="destination-detail-actions"><a href={mapUrl} target="_blank" rel="noreferrer"><Navigation size={16} /> View on Map</a><button type="button" onClick={() => onAdd(destination)}><Clock3 size={16} /> Add to Itinerary</button></div>
+        <div className="destination-detail-actions"><a href={mapUrl}><Navigation size={16} /> View on Map</a><button type="button" onClick={() => onAdd(destination)}><Clock3 size={16} /> Add to Itinerary</button></div>
       </div>
     </DialogSurface>
   </div>

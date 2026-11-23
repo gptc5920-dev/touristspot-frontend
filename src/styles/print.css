@@ -1,3 +1,8 @@
 @media print {
-  .topbar, .preference-panel, .itinerary-actions, .map-and-budget, .alternatives-section, .travel-note { display: none; }.planner-layout { display: block; }.itinerary-area { padding: 0; }.timeline-item::before { background: #a8b5b1; }.stop-card { break-inside: avoid; }
+  .topbar, .preference-panel, .itinerary-actions, .map-card, .alternatives-section, .travel-note, .stop-footer button, .alert { display: none !important; }
+  .planner-layout, .route-grid, .map-and-budget { display: block !important; }
+  .itinerary-area { padding: 0 !important; }
+  .timeline-item::before { background: #a8b5b1; }
+  .stop-card, .budget-panel, .day-heading { break-inside: avoid; }
+  .budget-panel { margin-top: 20px; }
 }

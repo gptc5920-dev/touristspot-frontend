@@ -102,7 +102,7 @@ export default function PlannerPage({
                 <div className="form-grid two-columns">
                   <label>Traveling as<select value={form.companion} onChange={(event) => onUpdateForm('companion', event.target.value)}><option value="solo">Solo</option><option value="couple">Couple</option><option value="family">Family</option><option value="friends">Friends</option><option value="seniors">Senior travelers</option><option value="children">With children</option></select></label>
                   <label>Travelers<input min="1" max="30" type="number" value={form.travelers} onChange={(event) => onUpdateForm('travelers', event.target.value)} /></label>
-                  <label>Transport<select value={form.transportation} onChange={(event) => onUpdateForm('transportation', event.target.value)}><option value="public">Public transit</option><option value="motorcycle">Motorcycle taxi</option><option value="private">Private vehicle</option><option value="walking">Walking</option></select></label>
+                  <label>Transport<select value={form.transportation} onChange={(event) => onUpdateForm('transportation', event.target.value)}><option value="public">Public transit</option><option value="motorcycle">Motorcycle</option><option value="private">Private vehicle</option><option value="walking">Walking</option></select></label>
                   <label>Language<select value={form.language} onChange={(event) => onUpdateForm('language', event.target.value)}><option>English</option><option>Filipino</option><option>Cebuano</option></select></label>
                 </div>
                 <label className="wide-label budget-label"><span>Estimated budget <strong>{form.budget ? peso.format(Number(form.budget)) : 'Not set'}</strong></span><input min="0" type="number" value={form.budget} onChange={(event) => onUpdateForm('budget', event.target.value)} placeholder="Optional amount in PHP" /></label>
@@ -130,7 +130,7 @@ export default function PlannerPage({
                   <button type="button" className="outline-button" onClick={onSave} disabled={!itinerary}><Save size={16} /> Save</button>
                   <div className="action-menu">
                     <button type="button" className="icon-button" title="Download itinerary" onClick={onDownload} disabled={!itinerary}><Download size={18} /></button>
-                    <button type="button" className="icon-button" title="Print itinerary" onClick={() => window.print()} disabled={!itinerary}><Printer size={18} /></button>
+                    <button type="button" className="outline-button" onClick={() => window.print()} disabled={!itinerary}><Printer size={18} /> Print itinerary</button>
                   </div>
                 </div>
               </div>

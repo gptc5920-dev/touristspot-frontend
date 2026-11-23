@@ -212,7 +212,7 @@ function App() {
       {auth.showLogin && (auth.context === 'admin'
         ? <AdminLoginDialog credentials={auth.credentials} setCredentials={auth.setCredentials} error={auth.error} onClose={auth.closeAuth} onSubmit={auth.login} loading={auth.loading} />
         : <AuthDialog mode={auth.mode} setMode={(mode) => { auth.setMode(mode); auth.setError('') }} credentials={auth.credentials} setCredentials={auth.setCredentials} signupDetails={auth.signupDetails} setSignupDetails={auth.setSignupDetails} error={auth.error} onClose={auth.closeAuth} onSignIn={auth.login} onSignUp={auth.signup} loading={auth.loading} />)}
-      {feedbackDestination && <DestinationFeedbackDialog destination={feedbackDestination} user={auth.user} apiFetch={apiFetch} onClose={() => setFeedbackDestination(null)} onRequireAuth={requireTouristSignIn} />}
+      {feedbackDestination && <DestinationFeedbackDialog destination={feedbackDestination} user={auth.user} apiFetch={apiFetch} onClose={() => setFeedbackDestination(null)} onRequireAuth={requireTouristSignIn} onSaved={planner.updateDestinationRating} />}
       {modal && <AppModal title={modal.title} message={modal.message} tone={modal.tone} onClose={() => setModal(null)} />}
     </div>
   )

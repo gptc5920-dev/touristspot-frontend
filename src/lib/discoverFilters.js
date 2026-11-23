@@ -1,8 +1,10 @@
+import { DESTINATION_CATEGORIES } from '../config/travel.js'
+
 export function readDiscoverFilters(search) {
   const params = new URLSearchParams(search)
   return {
     searchTerm: params.get('q') || '',
-    categories: [...new Set(params.getAll('category').filter((value) => value && value !== 'Beach & coastal'))],
+    categories: [...new Set(params.getAll('category').filter((value) => DESTINATION_CATEGORIES.includes(value)))],
     freeOnly: params.get('free') === '1',
     savedOnly: params.get('saved') === '1',
     sortBy: params.get('sort') === 'name' ? 'name' : 'rating',

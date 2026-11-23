@@ -11,6 +11,7 @@ import {
 import LocationMapModal from '../common/LocationMapModal'
 import LocationFields from './LocationFields'
 import DestinationPhotoEditor from './DestinationPhotoEditor'
+import ImageCropDialog from './ImageCropDialog'
 import { destinationCategoryName } from '../../lib/destinationCategories'
 
 function FieldError({ field, errors }) {
@@ -32,6 +33,7 @@ function DestinationSection({ sectionId, title, description, icon, complete, opt
 
 export default function DestinationEditor({ apiFetch, dashboard, draft, errors, focusErrors, pendingImage, removingImage, saving, selectedId, onChange, onChooseImage, onRemoveImage, onPhotosChange, onDelete, onSubmit, onToggleList }) {
   const [showMapModal, setShowMapModal] = useState(false)
+  const [cropSource, setCropSource] = useState(null)
   const formRef = useRef(null)
   const activitySuggestions = suggestedDestinationActivities(draft.categories, draft.activities)
   const pendingImagePreview = useMemo(() => pendingImage ? URL.createObjectURL(pendingImage) : '', [pendingImage])
@@ -127,7 +129,7 @@ export default function DestinationEditor({ apiFetch, dashboard, draft, errors, 
           <label>Available until <small>Optional</small><input className={invalidClass('availability_end')} aria-invalid={Boolean(errors.availability_end)} type="date" min={draft.availability_start || undefined} value={draft.availability_end} onChange={(event) => onChange('availability_end', event.target.value)} /><FieldError field="availability_end" errors={errors} /></label>
         </div>
         <div className="admin-form-grid two-columns">
-          <label>Suggested visit duration <b>*</b><span className="input-with-suffix"><input className={invalidClass('visit_minutes')} aria-invalid={Boolean(errors.visit_minutes)} min="15" max="720" step="15" type="number" value={draft.visit_minutes} onChange={(event) => onChange('visit_minutes', event.target.value)} /><span>minutes</span></span><div className="field-presets">{[30, 60, 90, 120].map((minutes) => <button type="button" key={minutes} onClick={() => onChange('visit_minutes', String(minutes))}>{minutes < 60 ? `${minutes} min` : `${minutes / 60} hr${minutes > 60 ? 's' : ''}`}</button>)}</div><FieldError field="visit_minutes" errors={errors} /></label>
+          <label>Suggested visit duration <b>*</b><span className="input-with-suffix"><input className={invalidClass('visit_minutes')} aria-invalid={Boolean(errors.visit_minutes)} min="15" max="720" step="15" type="number" value={draft.visit_minutes} onChange={(event) => onChange('visit_minutes', event.target.value)} /><span>minutes</span></span><div className="field-presets">{[30, 60, 90, 120, 180].map((minutes) => <button type="button" key={minutes} onClick={() => onChange('visit_minutes', String(minutes))}>{minutes < 60 ? `${minutes} min` : `${minutes / 60} hr${minutes > 60 ? 's' : ''}`}</button>)}</div><FieldError field="visit_minutes" errors={errors} /></label>
           <label>Entrance fee <b>*</b><span className="input-with-prefix"><span>₱</span><input className={invalidClass('entrance_fee')} aria-invalid={Boolean(errors.entrance_fee)} min="0" step="0.01" type="number" value={draft.entrance_fee} onChange={(event) => onChange('entrance_fee', event.target.value)} /></span><div className="field-presets"><button type="button" onClick={() => onChange('entrance_fee', '0')}>Free entry</button></div><FieldError field="entrance_fee" errors={errors} /></label>
         </div>
       </DestinationSection>
@@ -145,7 +147,8 @@ export default function DestinationEditor({ apiFetch, dashboard, draft, errors, 
       <DestinationSection sectionId="media" title="Cover image" description="Uploaded image or official external image URL" icon={<ImagePlus size={17} />} complete={sectionCompletion.media} optional>
         <div className="destination-media-grid">
           <div tabIndex={errors.image ? -1 : undefined} className={errors.image ? 'media-upload-card invalid' : 'media-upload-card'}>
-            {coverPreview ? <div className="media-preview"><img src={coverPreview} alt={`Cover preview for ${draft.name || 'destination'}`} /><button type="button" onClick={onRemoveImage} disabled={removingImage || saving}><Trash2 size={15} /> {removingImage ? 'Removing...' : pendingImage ? 'Discard image' : 'Remove image'}</button></div> : <label className="media-dropzone"><span><Upload size={22} /></span><strong>Upload cover image</strong><small>JPG, PNG, or WebP · maximum 5 MB</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { onChooseImage(event.target.files?.[0]); event.target.value = '' }} /></label>}
+            {coverPreview ? <div className="media-preview"><img src={coverPreview} alt={`Cover preview for ${draft.name || 'destination'}`} /><button type="button" onClick={onRemoveImage} disabled={removingImage || saving}><Trash2 size={15} /> {removingImage ? 'Removing...' : pendingImage ? 'Discard image' : 'Remove image'}</button></div> : <label className="media-dropzone"><span><Upload size={22} /></span><strong>Upload cover image</strong><small>JPG, PNG, or WebP · maximum 5 MB</small><input type="file" accept="image/jpeg,image/png,image/webp" onChange={(event) => { const file = event.target.files?.[0]; if (file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 5 * 1024 * 1024) setCropSource(file); else if (file) onChooseImage(file); event.target.value = '' }} /></label>}
+            {coverPreview && <button type="button" className="image-crop-open" disabled={saving || removingImage} onClick={() => setCropSource(pendingImage || coverPreview)}>Crop cover image</button>}
             {pendingImage && <p className="selected-file"><Check size={14} /> {pendingImage.name} · {(pendingImage.size / 1024 / 1024).toFixed(1)} MB</p>}
             <FieldError field="image" errors={errors} />
           </div>
@@ -163,6 +166,7 @@ export default function DestinationEditor({ apiFetch, dashboard, draft, errors, 
 
       <div className="editor-footer destination-editor-footer"><p><CircleAlert size={15} /> Review opening hours, fees, and advisories regularly.</p><div className="destination-editor-actions">{selectedId && <button type="button" className="admin-danger-button" onClick={onDelete} disabled={saving || removingImage}><Trash2 size={16} /> Delete</button>}<button type="submit" className="admin-primary-button" disabled={saving}>{saving ? <RefreshCw className="spin" size={17} /> : <Save size={17} />}{saving ? ' Saving destination...' : selectedId ? ' Save changes' : ' Add destination'}</button></div></div>
     </form>
+    {cropSource && <ImageCropDialog source={cropSource} onClose={() => setCropSource(null)} onApply={(file) => { onChooseImage(file); setCropSource(null) }} />}
     {showMapModal && <LocationMapModal draft={draft} onClose={() => setShowMapModal(false)} onApply={({ address, latitude, longitude }) => { if (address) onChange('address', address); onChange('latitude', latitude); onChange('longitude', longitude); setShowMapModal(false) }} />}
     <div className="interest-summary"><span>Popular interest signals</span>{dashboard?.popular_interests?.map(([interest, count]) => <strong key={interest}>{interest} <small>{count}</small></strong>)}</div>
   </section>

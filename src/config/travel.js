@@ -13,15 +13,15 @@ export const INTERESTS = [
 
 export const DESTINATION_CATEGORIES = [
   'Nature & eco-tourism', 'Waterfall & river', 'Pool', 'Mountain & viewpoint',
-  'Historical site', 'Cultural heritage', 'Religious site', 'Food & dining',
-  'Adventure & recreation', 'Park & family attraction', 'Shopping & local products', 'Accommodation', 'Food & Accommodation',
+  'Historical site', 'Religious site', 'Food', 'Accommodation', 'Garden',
+  'Adventure & recreation', 'Shopping & local products',
 ]
 
 export const OPERATING_DAYS = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
-export const TRANSPORT_SUGGESTIONS = ['Public transport', 'Private vehicle', 'Motorcycle taxi', 'Walking', 'Boat transfer']
+export const TRANSPORT_SUGGESTIONS = ['Motorcycle']
 export const COMPANION_SUGGESTIONS = ['Solo travelers', 'Couples', 'Families', 'Friend groups', 'Senior travelers', 'Children']
 export const ACCESSIBILITY_SUGGESTIONS = ['Wheelchair accessible', 'Accessible restroom', 'Senior-friendly', 'Child-friendly', 'Rest areas available']
-export const SAFETY_SUGGESTIONS = ['Bring drinking water', 'Wear suitable footwear', 'Observe weather advisories', 'Children need supervision']
+export const SAFETY_SUGGESTIONS = ['Bring drinking water', 'Wear suitable footwear', 'Observe weather advisories', 'Children need supervision', 'Pack jacket']
 
 export const CATEGORY_ACTIVITY_SUGGESTIONS = {
   'Nature & eco-tourism': ['Nature walk', 'Bird watching', 'Photography'],
@@ -29,14 +29,12 @@ export const CATEGORY_ACTIVITY_SUGGESTIONS = {
   Pool: ['Swimming', 'Relaxation', 'Group activity'],
   'Mountain & viewpoint': ['Hiking', 'Sightseeing', 'Photography'],
   'Historical site': ['Guided tour', 'Museum visit', 'Photography'],
-  'Cultural heritage': ['Cultural tour', 'Local crafts', 'Community visit'],
   'Religious site': ['Prayer', 'Heritage tour', 'Quiet reflection'],
-  'Food & dining': ['Local dining', 'Food tasting', 'Market visit'],
+  Food: ['Local dining', 'Food tasting', 'Market visit'],
   'Adventure & recreation': ['Outdoor activity', 'Hiking', 'Group activity'],
-  'Park & family attraction': ['Picnic', 'Children activities', 'Sightseeing'],
+  Garden: ['Garden walk', 'Photography', 'Relaxation'],
   'Shopping & local products': ['Souvenir shopping', 'Local crafts', 'Market visit'],
   Accommodation: ['Overnight stay', 'Dining', 'Relaxation'],
-  'Food & Accommodation': ['Local dining', 'Food tasting', 'Overnight stay', 'Relaxation'],
 }
 
 export function suggestedDestinationActivities(categories, selectedActivities = []) {

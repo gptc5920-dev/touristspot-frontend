@@ -43,6 +43,9 @@
 .discover-category-tag { display: inline-flex; align-items: center; gap: 3px; max-width: 100%; margin-top: 5px; padding: 3px 6px; overflow: hidden; border-radius: 99px; color: #24413a; background: #e0efe9; font-size: 10px; text-overflow: ellipsis; white-space: nowrap; }
 .discover-card-map { display: inline-flex; align-items: center; gap: 3px; margin: 6px 0 0 5px; color: #0b7069; font-size: 10px; font-weight: 700; text-decoration: none; }
 .discover-card-map:hover { text-decoration: underline; }
+.discover-review-button { display: flex; align-items: center; justify-content: center; gap: 7px; width: calc(100% - 32px); min-height: 44px; margin: 0 16px 16px; border: 1px solid #b5d1c6; border-radius: 6px; color: #0b7069; background: #f5faf8; font-size: 13px; font-weight: 700; cursor: pointer; }
+.discover-review-button:hover { border-color: #0b7069; background: #e6f3ed; }
+.discover-review-button:focus-visible { outline: 3px solid #0b7069; outline-offset: 2px; }
 .discover-card-skeleton { height: 270px; border-radius: 8px; background: linear-gradient(100deg, #e2eae6, #f4f8f5, #e2eae6); background-size: 200% 100%; animation: home-skeleton 1.3s linear infinite; }
 .discover-empty { grid-column: 1 / -1; display: grid; justify-items: center; gap: 8px; min-height: 225px; padding: 35px; border: 1px dashed #b5d1c6; border-radius: 8px; color: #54756c; text-align: center; }
 .discover-empty h3, .discover-empty p { margin: 0; }

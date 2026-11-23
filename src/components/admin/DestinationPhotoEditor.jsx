@@ -2,9 +2,11 @@ import { useState } from 'react'
 import { readApiJson, resolveDestinationMedia } from '../../api'
 import { apiErrorMessage, requestErrorMessage } from '../../lib/app'
 import DestinationImage from '../common/DestinationImage'
+import ImageCropDialog from './ImageCropDialog'
 
 export default function DestinationPhotoEditor({ apiFetch, destinationId, photos, disabled, onChange }) {
   const [busy, setBusy] = useState(null)
+  const [crop, setCrop] = useState(null)
   const [error, setError] = useState('')
   const [status, setStatus] = useState('')
 
@@ -39,7 +41,8 @@ export default function DestinationPhotoEditor({ apiFetch, destinationId, photos
         const locked = disabled || busy !== null || !destinationId
         return <div className="destination-photo-slot" key={position}>
           {photo ? <DestinationImage destination={{ ...photo, name: `Supporting photo ${position + 1}` }} /> : <div className="destination-photo-empty">Photo {position + 1}</div>}
-          <label>Photo {position + 1}<input type="file" accept="image/jpeg,image/png,image/webp" disabled={locked} aria-label={`${photo ? 'Replace' : 'Upload'} supporting photo ${position + 1}`} onChange={(event) => { const file = event.target.files?.[0]; if (file) updatePhoto(position, file); event.target.value = '' }} /></label>
+          <label>Photo {position + 1}<input type="file" accept="image/jpeg,image/png,image/webp" disabled={locked} aria-label={`${photo ? 'Replace' : 'Upload'} supporting photo ${position + 1}`} onChange={(event) => { const file = event.target.files?.[0]; if (file && ['image/jpeg', 'image/png', 'image/webp'].includes(file.type) && file.size <= 5 * 1024 * 1024) setCrop({ position, source: file }); else if (file) updatePhoto(position, file); event.target.value = '' }} /></label>
+          {photo && <button type="button" disabled={locked} onClick={() => setCrop({ position, source: photo.image_url })}>Crop photo {position + 1}</button>}
           {photo && <button type="button" disabled={locked} onClick={() => updatePhoto(position)}>Remove photo {position + 1}</button>}
           {busy === position && <small role="status">Saving photo...</small>}
         </div>
@@ -48,5 +51,6 @@ export default function DestinationPhotoEditor({ apiFetch, destinationId, photos
     <small>JPG, PNG, or WebP · maximum 5 MB per photo.</small>
     {error && <p role="alert" className="admin-field-error">{error}</p>}
     <p role="status">{status}</p>
+    {crop && <ImageCropDialog source={crop.source} onClose={() => setCrop(null)} onApply={(file) => { updatePhoto(crop.position, file); setCrop(null) }} />}
   </div>
 }

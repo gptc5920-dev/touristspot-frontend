@@ -6,7 +6,7 @@ import {
 import { readApiJson } from '../../api'
 import { apiErrorMessage, requestErrorMessage } from '../../lib/app'
 
-export default function DestinationFeedbackDialog({ destination, user, apiFetch, onClose, onRequireAuth }) {
+export default function DestinationFeedbackDialog({ destination, user, apiFetch, onClose, onRequireAuth, onSaved }) {
   const [feedback, setFeedback] = useState(null)
   const [form, setForm] = useState({ rating: 5, comment: '', suggestion: '' })
   const [loading, setLoading] = useState(true)
@@ -48,6 +48,7 @@ export default function DestinationFeedbackDialog({ destination, user, apiFetch,
       if (!response.ok) throw new Error(apiErrorMessage(body, 'Could not save your feedback.'))
       setFeedback(body)
       setSaved(true)
+      onSaved(destination.id, body)
     } catch (requestError) {
       setError(requestErrorMessage(requestError, 'Could not save your feedback.'))
     } finally {

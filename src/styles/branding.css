@@ -1,0 +1,17 @@
+/* Municipal Tourism Council logo: royal blue, deep navy and gold. */
+:root { --brand-blue: #1048a7; --brand-blue-dark: #092f72; --brand-blue-light: #eaf1fc; --brand-gold: #f4ce32; }
+.admin-shell { --admin-blue: var(--brand-blue); }
+.home-hero-shell { background: radial-gradient(circle at 72% 48%, #215ab2 0, #103a80 42%, #092552 100%); }
+.home-cta { background: linear-gradient(125deg, #092f72, #1654b1); }
+.home-hero-copy .home-kicker, .home-cta .home-kicker { color: #f9dc61; }
+.home-hero-actions .home-primary-action, .home-primary-action, .generate-button, .admin-primary-button { border-color: var(--brand-blue); background: var(--brand-blue); color: #fff; box-shadow: 0 8px 20px #1048a726; }
+.home-hero-actions .home-primary-action:hover, .home-primary-action:hover, .generate-button:hover, .admin-primary-button:hover { border-color: var(--brand-blue-dark); background: var(--brand-blue-dark); color: #fff; }
+.home-cta .home-primary-action { background: var(--brand-gold); border-color: var(--brand-gold); color: #102e62; }
+.home-cta .home-primary-action:hover { background: #ffe279; color: #092552; }
+.tourist-sidebar-nav a.active, .tourist-sidebar-nav a:hover, .tourist-sidebar-action:hover, .tourist-avatar { color: var(--brand-blue-dark); background: var(--brand-blue-light); }
+.main-nav :is(button, a):hover, .main-nav :is(button, a).active, .home-route .topbar .main-nav :is(button, a).active { border-color: var(--brand-gold); color: var(--brand-blue-dark); }
+.discover-category-list button.selected, .discover-category-list button:hover, .interest-chip.selected, .discover-filter-trigger.active { border-color: #8daee2; background: var(--brand-blue-light); color: var(--brand-blue-dark); }
+.discover-review-button, .discover-card-map, .home-text-action, .eyebrow { color: var(--brand-blue); }
+.discover-review-button:hover { background: var(--brand-blue-light); border-color: var(--brand-blue); }
+input[type="checkbox"], input[type="radio"], input[type="range"] { accent-color: var(--brand-blue); }
+:focus-visible { outline-color: var(--brand-blue); }

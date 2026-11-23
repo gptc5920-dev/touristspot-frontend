@@ -30,11 +30,11 @@ test('destinations expose all categories and support older single-category respo
   assert.deepEqual(destinationCategories({ category: 'Beach & coastal' }), [])
 })
 
-test('pool, mountain and food and accommodation tags retain their filter values', () => {
-  const categories = ['Pool', 'Mountain & viewpoint', 'Food & Accommodation']
+test('food, accommodation and garden tags retain their filter values', () => {
+  const categories = ['Pool', 'Mountain & viewpoint', 'Food', 'Accommodation', 'Garden']
   const destination = { categories }
   assert.deepEqual(destinationCategories(destination), categories)
-  assert.equal(destinationCategoryLabel(destination), 'Pool · Mountain View · Food & Accommodation')
+  assert.equal(destinationCategoryLabel(destination), 'Pool · Mountain View · Food · Accommodation · Garden')
   const filters = { ...readDiscoverFilters(''), categories }
   const path = writeDiscoverFilters(new URL('https://travel.test/discover/'), filters)
   assert.deepEqual(readDiscoverFilters(new URL(path, 'https://travel.test').search).categories, categories)

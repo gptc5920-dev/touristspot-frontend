@@ -301,6 +301,7 @@ export default function usePlanner({
   return {
     form,
     destinations,
+    updateDestinationRating: (id, feedback) => setDestinations((current) => current.map((destination) => destination.id === id ? { ...destination, average_rating: feedback.average_rating, review_count: feedback.review_count } : destination)),
     destinationError,
     retryDestinations: () => setDestinationRequest((current) => current + 1),
     itinerary,

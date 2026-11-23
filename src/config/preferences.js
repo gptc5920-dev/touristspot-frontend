@@ -18,7 +18,7 @@ export const EMPTY_TOURIST_PREFERENCES = {
 
 export const TRANSPORTATION_OPTIONS = [
   ['public', 'Public transit'],
-  ['motorcycle', 'Motorcycle taxi'],
+  ['motorcycle', 'Motorcycle'],
   ['private', 'Private vehicle'],
   ['walking', 'Walking'],
 ]
